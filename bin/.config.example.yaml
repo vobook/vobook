@@ -1,0 +1,25 @@
+app:
+  name: vobook
+  version: 1
+  build: 1
+  env: dev #dev|test|release
+
+db:
+  user: postgres
+  password: postgres
+  name: vobook
+  port: 5432
+  schema: public
+  log_queries: true
+
+mail:
+  server: mail.example.com
+  port: 587
+  user: user@example.com
+  password: password
+
+server:
+  host: localhost
+  port: 8080
+
+telegram_bot_api: ""
