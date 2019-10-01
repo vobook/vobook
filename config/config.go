@@ -9,9 +9,9 @@ import (
 )
 
 const (
-	AppEnvDev     = "dev"
-	AppEnvTest    = "test"
-	AppEnvRelease = "release"
+	DevEnv     = "dev"
+	TestEnv    = "test"
+	ReleaseEnv = "release"
 )
 
 type Config struct {
@@ -23,11 +23,10 @@ type Config struct {
 	}
 
 	DB struct {
+		Addr       string
 		User       string
 		Password   string
 		Name       string
-		Port       string
-		Schema     string
 		LogQueries bool `yaml:"log_queries"`
 	}
 
@@ -44,17 +43,21 @@ type Config struct {
 		Host string
 	}
 
+	FileStorage struct {
+		Dir string
+	}
+
 	TelegramBotAPI string `yaml:"telegram_bot_api"`
 
 	LogsFilePath string
 }
 
-var Instance *Config
+var instance *Config
 
 // Get returns config from .config.yaml
 func Get() *Config {
-	if Instance != nil {
-		return Instance
+	if instance != nil {
+		return instance
 	}
 
 	name := ".config.yaml"
@@ -67,27 +70,27 @@ func Get() *Config {
 		}
 		panic(msg)
 	}
-	err = yaml.Unmarshal(yamlConf, &Instance)
+	err = yaml.Unmarshal(yamlConf, &instance)
 	if err != nil {
 		panic(err)
 	}
 
-	return Instance
+	return instance
 }
 
 func Reload() *Config {
-	Instance = nil
+	instance = nil
 	return Get()
 }
 
 func IsDevEnv() bool {
-	return Instance.App.Env == AppEnvDev
+	return instance.App.Env == DevEnv
 }
 
 func IsTestEnv() bool {
-	return Instance.App.Env == AppEnvTest
+	return instance.App.Env == TestEnv
 }
 
 func IsReleaseEnv() bool {
-	return Instance.App.Env == AppEnvRelease
+	return instance.App.Env == ReleaseEnv
 }

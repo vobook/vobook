@@ -1,4 +1,4 @@
-package db
+package database
 
 import (
 	"context"
@@ -22,9 +22,11 @@ var (
 func connect() *pg.DB {
 	conf := config.Get()
 	conn = pg.Connect(&pg.Options{
-		User:     conf.DB.User,
-		Password: conf.DB.Password,
-		Database: conf.DB.Name,
+		Addr:            conf.DB.Addr,
+		User:            conf.DB.User,
+		Password:        conf.DB.Password,
+		Database:        conf.DB.Name,
+		ApplicationName: conf.App.Name + "." + conf.App.Env,
 	})
 
 	conn.AddQueryHook(dbLogger{})

@@ -5,11 +5,10 @@ app:
   env: dev #dev|test|release
 
 db:
-  user: postgres
-  password: postgres
+  addr: localhost:26257
+  user: root
+  password: root
   name: vobook
-  port: 5432
-  schema: public
   log_queries: true
 
 mail:
@@ -21,5 +20,8 @@ mail:
 server:
   host: localhost
   port: 8080
+
+file_storage:
+  dir: files
 
 telegram_bot_api: ""

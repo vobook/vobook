@@ -15,7 +15,7 @@ import (
 
 const (
 	userID             = 678764105
-	checkEventInterval = time.Minute
+	checkEventInterval = time.Hour * 24
 )
 
 type Event struct {
