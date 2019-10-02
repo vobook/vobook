@@ -6,6 +6,17 @@ import (
 	"github.com/vovainside/vobook/config"
 )
 
+var (
+	ReqisterUserEmailExists = New422("User with this email already registered")
+)
+
+func New400(message string) error {
+	return Error{
+		Code:    http.StatusBadRequest,
+		Message: message,
+	}
+}
+
 func New422(message string) error {
 	return Error{
 		Code:    http.StatusUnprocessableEntity,

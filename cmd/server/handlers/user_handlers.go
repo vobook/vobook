@@ -4,6 +4,7 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"github.com/vovainside/vobook/cmd/server/errors"
 	"github.com/vovainside/vobook/cmd/server/requests"
 	"github.com/vovainside/vobook/services"
 )
@@ -12,25 +13,25 @@ func RegisterUser(c *gin.Context) {
 	var req requests.RegisterUser
 	err := c.ShouldBindJSON(&req)
 	if err != nil {
-		c.AbortWithStatusJSON(http.StatusBadRequest, err.Error())
+		abort400(c, err)
 		return
 	}
 
 	user, err := req.Validate()
 	if err != nil {
-		c.AbortWithStatusJSON(http.StatusUnprocessableEntity, err.Error())
+		abort422(c, err)
 		return
 	}
 
 	_, err = services.FindUserByEmail(req.Email)
 	if err == nil {
-		c.AbortWithStatusJSON(http.StatusUnprocessableEntity, "user with email "+req.Email+" already exists")
+		abort(c, errors.ReqisterUserEmailExists)
 		return
 	}
 
 	err = services.CreateUser(user)
 	if err != nil {
-		c.AbortWithStatusJSON(http.StatusInternalServerError, err.Error())
+		abort(c, err)
 		return
 	}
 

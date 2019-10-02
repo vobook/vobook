@@ -1,10 +1,13 @@
 package tests
 
 import (
+	"net/http"
 	"testing"
 
 	fake "github.com/brianvoe/gofakeit"
+	"github.com/vovainside/vobook/cmd/server/errors"
 	"github.com/vovainside/vobook/cmd/server/requests"
+	"github.com/vovainside/vobook/cmd/server/responses"
 	"github.com/vovainside/vobook/database/factories"
 	"github.com/vovainside/vobook/database/models"
 	"github.com/vovainside/vobook/tests/apitest"
@@ -27,7 +30,7 @@ func TestRegisterUser(t *testing.T) {
 	apitest.POST(t, apitest.Request{
 		Path:         "users/register",
 		Body:         req,
-		AssertStatus: 200,
+		AssertStatus: http.StatusOK,
 		BindResponse: &resp,
 		IsPublic:     true,
 	})
@@ -48,16 +51,14 @@ func TestRegisterUser_UserAlreadyExists(t *testing.T) {
 		Password:  utils.RandomString(),
 	}
 
-	var resp models.User
+	var resp responses.Error
 	apitest.POST(t, apitest.Request{
 		Path:         "users/register",
 		Body:         req,
-		AssertStatus: 200,
+		AssertStatus: http.StatusUnprocessableEntity,
 		BindResponse: &resp,
 		IsPublic:     true,
 	})
 
-	assert.Equals(t, req.FirstName, resp.FirstName)
-	assert.Equals(t, req.LastName, resp.LastName)
-	assert.Equals(t, req.Email, resp.Email)
+	assert.Equals(t, resp.Error, errors.ReqisterUserEmailExists.Error())
 }

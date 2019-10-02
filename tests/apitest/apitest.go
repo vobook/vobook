@@ -25,6 +25,7 @@ var (
 	DB        orm.DB
 	AuthUser  *models.User
 	authToken string
+	router    *gin.Engine
 )
 
 type Headers map[string]string
@@ -41,9 +42,9 @@ type Request struct {
 }
 
 func init() {
-	// changing working dir to vobook/server
+	// changing working dir to vobook/bin
 	// just want to use main .config.yaml, thats why
-	_ = os.Chdir("../../")
+	_ = os.Chdir("../../../bin")
 	conf := config.Get()
 
 	// override config
@@ -61,6 +62,9 @@ func init() {
 	}
 	database.SetDB(tx)
 	DB = database.ORM()
+
+	router = gin.New()
+	routes.Register(router)
 }
 
 // makeRequest makes request (Duh...)
@@ -82,9 +86,6 @@ func makeRequest(t *testing.T, r Request) *httptest.ResponseRecorder {
 
 		req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", authToken))
 	}
-
-	router := gin.New()
-	routes.Register(router)
 
 	w := httptest.NewRecorder()
 	router.ServeHTTP(w, req)

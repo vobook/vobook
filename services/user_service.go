@@ -6,7 +6,7 @@ import (
 )
 
 func CreateUser(elem *models.User) (err error) {
-	db := database.Conn()
+	db := database.ORM()
 	_, err = db.Model(elem).Insert()
 	return
 }
