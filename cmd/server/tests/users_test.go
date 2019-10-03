@@ -38,6 +38,19 @@ func TestRegisterUser(t *testing.T) {
 	assert.Equals(t, req.FirstName, resp.FirstName)
 	assert.Equals(t, req.LastName, resp.LastName)
 	assert.Equals(t, req.Email, resp.Email)
+
+	assert.DatabaseHas(t, "users", utils.M{
+		"id":             resp.ID,
+		"first_name":     req.FirstName,
+		"last_name":      req.LastName,
+		"email":          req.Email,
+		"email_verified": false,
+	})
+
+	assert.DatabaseHas(t, "email_verifications", utils.M{
+		"user_id": resp.ID,
+		"email":   req.Email,
+	})
 }
 
 func TestRegisterUser_UserAlreadyExists(t *testing.T) {

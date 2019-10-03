@@ -6,12 +6,13 @@ import (
 )
 
 type User struct {
-	ID        string    `json:"id"`
-	FirstName string    `json:"first_name"`
-	LastName  string    `json:"last_name"`
-	Email     string    `json:"email"`
-	Password  string    `json:"-"`
-	CreatedAt time.Time `json:"created_at"`
+	ID            string    `json:"id"`
+	FirstName     string    `json:"first_name"`
+	LastName      string    `json:"last_name"`
+	Email         string    `json:"email"`
+	EmailVerified bool      `json:"email_verified"`
+	Password      string    `json:"-"`
+	CreatedAt     time.Time `json:"created_at"`
 }
 
 func (m *User) BeforeInsert(ctx context.Context) (context.Context, error) {

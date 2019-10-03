@@ -3,10 +3,12 @@ package handlers
 import (
 	"net/http"
 
+	emailverification "github.com/vovainside/vobook/domain/email_verification"
+
 	"github.com/gin-gonic/gin"
 	"github.com/vovainside/vobook/cmd/server/errors"
 	"github.com/vovainside/vobook/cmd/server/requests"
-	"github.com/vovainside/vobook/services"
+	"github.com/vovainside/vobook/domain/user"
 )
 
 func RegisterUser(c *gin.Context) {
@@ -17,25 +19,33 @@ func RegisterUser(c *gin.Context) {
 		return
 	}
 
-	user, err := req.Validate()
+	u, err := req.Validate()
 	if err != nil {
 		abort422(c, err)
 		return
 	}
 
-	_, err = services.FindUserByEmail(req.Email)
+	_, err = user.FindByEmail(req.Email)
 	if err == nil {
 		abort(c, errors.ReqisterUserEmailExists)
 		return
 	}
 
-	err = services.CreateUser(user)
+	err = user.Create(u)
 	if err != nil {
 		abort(c, err)
 		return
 	}
 
-	c.JSON(http.StatusOK, user)
+	err = emailverification.Create(u.ID, u.Email)
+	if err != nil {
+		abort(c, err)
+		return
+	}
+
+	// TODO send email confirmation email
+
+	c.JSON(http.StatusOK, u)
 }
 
 func SearchUsers(c *gin.Context) {
