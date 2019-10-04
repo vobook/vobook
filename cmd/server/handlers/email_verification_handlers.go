@@ -10,13 +10,8 @@ import (
 	"github.com/vovainside/vobook/domain/user"
 )
 
-func RegisterUser(c *gin.Context) {
+func VerifyEmail(c *gin.Context) {
 	var req requests.RegisterUser
-	err := c.ShouldBindJSON(&req)
-	if err != nil {
-		abort400(c, err)
-		return
-	}
 
 	u, err := req.Validate()
 	if err != nil {
@@ -45,14 +40,4 @@ func RegisterUser(c *gin.Context) {
 	// TODO send email verification email
 
 	c.JSON(http.StatusOK, u)
-}
-
-func SearchUsers(c *gin.Context) {
-
-}
-
-func GetUserByID(c *gin.Context) {
-	id := c.Param("id")
-
-	c.JSON(200, "user id is "+id)
 }

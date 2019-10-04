@@ -28,7 +28,7 @@ func TestRegisterUser(t *testing.T) {
 
 	var resp models.User
 	apitest.POST(t, apitest.Request{
-		Path:         "users/register",
+		Path:         "register-user",
 		Body:         req,
 		AssertStatus: http.StatusOK,
 		BindResponse: &resp,
@@ -66,7 +66,7 @@ func TestRegisterUser_UserAlreadyExists(t *testing.T) {
 
 	var resp responses.Error
 	apitest.POST(t, apitest.Request{
-		Path:         "users/register",
+		Path:         "register-user",
 		Body:         req,
 		AssertStatus: http.StatusUnprocessableEntity,
 		BindResponse: &resp,
