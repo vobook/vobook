@@ -32,6 +32,16 @@ func FindByID(id string) (elem models.User, err error) {
 	return
 }
 
+func UpdatePassword(id, password string) (err error) {
+	_, err = database.ORM().
+		Model(&models.User{}).
+		Where("id = ?", id).
+		Set("password = ?", password).
+		Update()
+
+	return
+}
+
 func EmailVerified(id, email string) (err error) {
 	if email != "" {
 		var count int

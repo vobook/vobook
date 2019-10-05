@@ -16,6 +16,7 @@ var (
 	AuthTokenMissing              = New401("Token missing")
 	AuthTokenInvalid              = New401("Invalid token")
 	AuthTokenExpired              = New401("Token expired")
+	WrongPassword                 = New422("Wrong password")
 )
 
 func New400(message string) error {

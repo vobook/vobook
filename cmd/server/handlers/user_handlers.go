@@ -3,6 +3,8 @@ package handlers
 import (
 	"net/http"
 
+	"github.com/vovainside/vobook/utils"
+
 	"github.com/gin-gonic/gin"
 	"github.com/vovainside/vobook/cmd/server/errors"
 	"github.com/vovainside/vobook/cmd/server/requests"
@@ -47,6 +49,34 @@ func RegisterUser(c *gin.Context) {
 	// TODO send email verification email
 
 	c.JSON(http.StatusOK, u)
+}
+
+func ChangeUserPassword(c *gin.Context) {
+	var req requests.ChangeUserPassword
+	if !bindJSON(c, &req) {
+		return
+	}
+
+	elem := authUser(c)
+	err := bcrypt.CompareHashAndPassword([]byte(elem.Password), []byte(req.OldPassword))
+	if err != nil {
+		abort422(c, errors.WrongPassword)
+		return
+	}
+
+	password, err := utils.HashPassword(req.NewPassword)
+	if err != nil {
+		Abort(c, err)
+		return
+	}
+
+	err = user.UpdatePassword(elem.ID, password)
+	if err != nil {
+		Abort(c, err)
+		return
+	}
+
+	c.JSON(http.StatusOK, responses.OK("You password successfully changed"))
 }
 
 func Login(c *gin.Context) {

@@ -11,6 +11,7 @@ import (
 	"github.com/vovainside/vobook/database"
 	"github.com/vovainside/vobook/database/factories"
 	"github.com/vovainside/vobook/database/models"
+	"github.com/vovainside/vobook/domain/user"
 	"github.com/vovainside/vobook/tests/apitest"
 	"github.com/vovainside/vobook/tests/assert"
 	"github.com/vovainside/vobook/utils"
@@ -110,7 +111,6 @@ func TestUserLogin(t *testing.T) {
 
 func TestViewCurrentUser(t *testing.T) {
 	var resp models.User
-
 	apitest.GET(t, apitest.Request{
 		Path:         "user",
 		AssertStatus: http.StatusOK,
@@ -121,4 +121,47 @@ func TestViewCurrentUser(t *testing.T) {
 	assert.Equals(t, apitest.AuthUser.FirstName, resp.FirstName)
 	assert.Equals(t, apitest.AuthUser.LastName, resp.LastName)
 	assert.Equals(t, "", resp.Password)
+}
+
+func TestChangeUserPassword(t *testing.T) {
+	apitest.Login(t)
+
+	elem := apitest.User(t)
+	oldPassword := elem.Password
+	oldPasswordHash, err := utils.HashPassword(oldPassword)
+	assert.NotError(t, err)
+
+	err = user.UpdatePassword(elem.ID, oldPasswordHash)
+	assert.NotError(t, err)
+
+	newPassword := utils.RandomString(10)
+	req := requests.ChangeUserPassword{
+		OldPassword: oldPassword,
+		NewPassword: newPassword,
+	}
+
+	var resp responses.Success
+	apitest.POST(t, apitest.Request{
+		Path:         "change-password",
+		Body:         req,
+		AssertStatus: http.StatusOK,
+		BindResponse: &resp,
+	})
+
+	// login with new password
+	req2 := requests.Login{
+		Email:    elem.Email,
+		Password: newPassword,
+	}
+
+	var resp2 responses.Login
+	apitest.POST(t, apitest.Request{
+		Path:         "login",
+		Body:         req2,
+		AssertStatus: http.StatusOK,
+		BindResponse: &resp2,
+		IsPublic:     true,
+	})
+
+	assert.Equals(t, apitest.AuthUser.ID, elem.ID)
 }

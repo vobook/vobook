@@ -74,3 +74,23 @@ func (r *Login) Validate() (err error) {
 
 	return
 }
+
+type ChangeUserPassword struct {
+	OldPassword string `json:"old_password"`
+	NewPassword string `json:"new_password"`
+}
+
+func (r *ChangeUserPassword) Validate() (err error) {
+	err = validation.ValidateStruct(r,
+		validation.Field(
+			&r.OldPassword,
+			validation.Required,
+		),
+		validation.Field(
+			&r.NewPassword,
+			validation.Required,
+		),
+	)
+
+	return
+}
