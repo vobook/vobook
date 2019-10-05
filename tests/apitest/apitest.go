@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"os"
+	"path"
 	"strings"
 	"testing"
 
@@ -15,7 +16,9 @@ import (
 	"github.com/vovainside/vobook/cmd/server/routes"
 	"github.com/vovainside/vobook/config"
 	"github.com/vovainside/vobook/database"
+	"github.com/vovainside/vobook/database/factories"
 	"github.com/vovainside/vobook/database/models"
+	authtoken "github.com/vovainside/vobook/domain/auth_token"
 	"github.com/vovainside/vobook/logger"
 	"github.com/vovainside/vobook/tests/assert"
 	"github.com/vovainside/vobook/utils"
@@ -78,10 +81,11 @@ func makeRequest(t *testing.T, r Request) *httptest.ResponseRecorder {
 	t.Log(fmt.Sprintf("[%d] %s %s", r.AssertStatus, r.method, r.Path))
 	req.Header.Set("Content-Type", "application/json")
 	req.Header.Set("Accept", "application/json")
+	req.Header.Set("X-Client", "1")
 
 	if !r.IsPublic {
 		if authToken == "" {
-			//Login(t)
+			Login(t)
 		}
 
 		req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", authToken))
@@ -99,6 +103,14 @@ func makeRequest(t *testing.T, r Request) *httptest.ResponseRecorder {
 func TestRequest(t *testing.T, req Request) *httptest.ResponseRecorder {
 	var body []byte
 	var err error
+
+	if p := config.Get().ApiBasePath; p != "" {
+		req.Path = path.Join(p, req.Path)
+	}
+
+	if !strings.HasSuffix(req.Path, "/") {
+		req.Path += "/"
+	}
 
 	if len(req.Headers) == 0 {
 		req.Headers = Headers{}
@@ -129,41 +141,34 @@ func TestRequest(t *testing.T, req Request) *httptest.ResponseRecorder {
 	return resp
 }
 
-//func Login(t *testing.T) {
-//	user, err := users.Fake()
-//	assert.NotError(t, err)
-//	LoginAs(t, user)
-//}
+func Login(t *testing.T) {
+	if AuthUser != nil && authToken != "" {
+		return
+	}
+	user, err := factories.CreateUser()
+	assert.NotError(t, err)
+	LoginAs(t, &user)
+}
 
-//func User(t *testing.T) *users.User {
-//	if AuthUser == nil {
-//		Login(t)
-//	}
-//
-//	return AuthUser
-//}
+func User(t *testing.T) *models.User {
+	if AuthUser == nil {
+		Login(t)
+	}
 
-//func LoginAs(t *testing.T, user *users.User) {
-//	shouldUpdate := false
-//	if user.Token == "" {
-//		token, err := utils.UniqueToken(users.Table)
-//		assert.NotError(t, err)
-//		user.Token = token
-//		shouldUpdate = true
-//	}
-//	if user.TokenExpiresAt.Before(time.Now()) {
-//		user.TokenExpiresAt = time.Now().Add(time.Hour)
-//		shouldUpdate = true
-//	}
-//
-//	if shouldUpdate {
-//		err := user.Update()
-//		assert.NotError(t, err)
-//	}
-//
-//	AuthUser = user
-//	authToken = users.EncodeToken(user)
-//}
+	return AuthUser
+}
+
+func LoginAs(t *testing.T, user *models.User) {
+	token := &models.AuthToken{
+		UserID:   user.ID,
+		ClientID: models.VueClient,
+	}
+	err := authtoken.Create(token)
+	assert.NotError(t, err)
+
+	AuthUser = user
+	authToken = authtoken.Sign(token)
+}
 
 func Logout() {
 	AuthUser = nil

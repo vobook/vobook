@@ -14,7 +14,7 @@ type RegisterUser struct {
 	Password  string `json:"password"`
 }
 
-func (r *RegisterUser) Validate() (user *models.User, err error) {
+func (r *RegisterUser) Validate() (err error) {
 	err = validation.ValidateStruct(r,
 		validation.Field(
 			&r.Email,
@@ -34,20 +34,43 @@ func (r *RegisterUser) Validate() (user *models.User, err error) {
 			validation.Required,
 		),
 	)
-	if err != nil {
-		return
-	}
 
+	return
+}
+
+func (r *RegisterUser) ToUser() (m *models.User, err error) {
 	password, err := utils.HashPassword(r.Password)
 	if err != nil {
 		return
 	}
 
-	user = &models.User{
+	m = &models.User{
 		FirstName: r.FirstName,
 		LastName:  r.LastName,
 		Email:     r.Email,
 		Password:  password,
 	}
+
+	return
+}
+
+type Login struct {
+	Email    string `json:"email"`
+	Password string `json:"password"`
+}
+
+func (r *Login) Validate() (err error) {
+	err = validation.ValidateStruct(r,
+		validation.Field(
+			&r.Email,
+			validation.Required,
+			is.Email,
+		),
+		validation.Field(
+			&r.Password,
+			validation.Required,
+		),
+	)
+
 	return
 }

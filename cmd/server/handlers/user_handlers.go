@@ -6,19 +6,21 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/vovainside/vobook/cmd/server/errors"
 	"github.com/vovainside/vobook/cmd/server/requests"
+	"github.com/vovainside/vobook/cmd/server/responses"
+	"github.com/vovainside/vobook/database/models"
+	authtoken "github.com/vovainside/vobook/domain/auth_token"
 	emailverification "github.com/vovainside/vobook/domain/email_verification"
 	"github.com/vovainside/vobook/domain/user"
+	"golang.org/x/crypto/bcrypt"
 )
 
 func RegisterUser(c *gin.Context) {
 	var req requests.RegisterUser
-	err := c.ShouldBindJSON(&req)
-	if err != nil {
-		abort400(c, err)
+	if !bindJSON(c, &req) {
 		return
 	}
 
-	u, err := req.Validate()
+	u, err := req.ToUser()
 	if err != nil {
 		abort422(c, err)
 		return
@@ -26,19 +28,19 @@ func RegisterUser(c *gin.Context) {
 
 	_, err = user.FindByEmail(req.Email)
 	if err == nil {
-		abort(c, errors.ReqisterUserEmailExists)
+		Abort(c, errors.ReqisterUserEmailExists)
 		return
 	}
 
 	err = user.Create(u)
 	if err != nil {
-		abort(c, err)
+		Abort(c, err)
 		return
 	}
 
 	err = emailverification.Create(u.ID, u.Email)
 	if err != nil {
-		abort(c, err)
+		Abort(c, err)
 		return
 	}
 
@@ -47,12 +49,45 @@ func RegisterUser(c *gin.Context) {
 	c.JSON(http.StatusOK, u)
 }
 
-func SearchUsers(c *gin.Context) {
+func Login(c *gin.Context) {
+	var req requests.Login
+	if !bindJSON(c, &req) {
+		return
+	}
 
+	elem, err := user.FindByEmail(req.Email)
+	if err != nil {
+		Abort(c, err)
+		return
+	}
+
+	err = bcrypt.CompareHashAndPassword([]byte(elem.Password), []byte(req.Password))
+	if err != nil {
+		abort422(c, errors.WrongEmailOrPassword)
+		return
+	}
+
+	token := &models.AuthToken{
+		UserID:    elem.ID,
+		ClientID:  models.ClientID(c.GetInt("clientID")),
+		ClientIP:  c.Request.RemoteAddr,
+		UserAgent: c.Request.UserAgent(),
+	}
+	err = authtoken.Create(token)
+	if err != nil {
+		Abort(c, err)
+		return
+	}
+
+	resp := responses.Login{
+		User:      elem,
+		Token:     authtoken.Sign(token),
+		ExpiresAt: token.ExpiresAt,
+	}
+
+	c.JSON(http.StatusOK, resp)
 }
 
-func GetUserByID(c *gin.Context) {
-	id := c.Param("id")
-
-	c.JSON(200, "user id is "+id)
+func GetAuthUser(c *gin.Context) {
+	c.JSON(http.StatusOK, authUser(c))
 }

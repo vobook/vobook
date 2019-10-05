@@ -52,6 +52,9 @@ type Config struct {
 
 	LogsFilePath              string
 	EmailVerificationLifetime time.Duration `yaml:"email_verification_lifetime"`
+	AuthTokenLifetime         time.Duration `yaml:"auth_token_lifetime"`
+
+	ApiBasePath string `yaml:"api_base_path"`
 }
 
 var instance *Config

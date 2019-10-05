@@ -5,7 +5,6 @@ import (
 	"github.com/vovainside/vobook/cmd/server/handlers"
 )
 
-func userRoutes(r *gin.Engine) {
-	r.GET("users", handlers.SearchUsers)
-	r.POST("register-user", handlers.RegisterUser)
+func userRoutes(r *gin.RouterGroup) {
+	r.GET("user/", handlers.GetAuthUser)
 }

@@ -17,30 +17,30 @@ func VerifyEmail(c *gin.Context) {
 
 	model, err := emailverification.FindByID(id)
 	if err != nil {
-		abort(c, err)
+		Abort(c, err)
 		return
 	}
 
 	if model.CreatedAt.Add(config.Get().EmailVerificationLifetime).Before(time.Now()) {
-		abort(c, errors.EmailVerificationExpired)
+		Abort(c, errors.EmailVerificationExpired)
 		return
 	}
 
 	userEl, err := user.FindByID(model.UserID)
 	if err != nil {
-		abort(c, err)
+		Abort(c, err)
 		return
 	}
 
 	err = user.EmailVerified(userEl.ID, model.Email)
 	if err != nil {
-		abort(c, err)
+		Abort(c, err)
 		return
 	}
 
 	err = emailverification.Delete(id)
 	if err != nil {
-		abort(c, err)
+		Abort(c, err)
 		return
 	}
 

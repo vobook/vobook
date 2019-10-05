@@ -15,10 +15,6 @@ func main() {
 	conf := config.Get()
 	r := gin.Default()
 
-	r.GET("/", func(c *gin.Context) {
-		c.String(http.StatusOK, conf.App.Name+" "+conf.App.Version+"."+conf.App.Build+"."+conf.App.Env)
-	})
-
 	routes.Register(r)
 
 	server := &http.Server{

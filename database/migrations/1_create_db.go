@@ -18,9 +18,19 @@ create table users (
 
 create table email_verifications (
     id uuid primary key not null default gen_random_uuid(),
-    user_id uuid references users (id),
+    user_id uuid not null references users (id),
     email text,
     created_at timestamptz not null
+);
+
+create table auth_tokens (
+    user_id uuid not null references users (id),
+	client_id int not null,
+	client_ip text,
+	user_agent text,
+	token text,
+    created_at timestamptz not null,
+    expires_at timestamptz not null
 );
 `
 

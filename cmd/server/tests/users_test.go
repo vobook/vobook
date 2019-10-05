@@ -4,6 +4,8 @@ import (
 	"net/http"
 	"testing"
 
+	"github.com/vovainside/vobook/database"
+
 	fake "github.com/brianvoe/gofakeit"
 	"github.com/vovainside/vobook/cmd/server/errors"
 	"github.com/vovainside/vobook/cmd/server/requests"
@@ -74,4 +76,50 @@ func TestRegisterUser_UserAlreadyExists(t *testing.T) {
 	})
 
 	assert.Equals(t, resp.Error, errors.ReqisterUserEmailExists.Error())
+}
+
+func TestUserLogin(t *testing.T) {
+	user, err := factories.MakeUser()
+	assert.NotError(t, err)
+
+	password := utils.RandomString(10)
+	passwordHash, err := utils.HashPassword(password)
+	assert.NotError(t, err)
+
+	user.Password = passwordHash
+	err = database.ORM().Insert(&user)
+	assert.NotError(t, err)
+
+	req := requests.Login{
+		Email:    user.Email,
+		Password: password,
+	}
+
+	var resp responses.Login
+	apitest.POST(t, apitest.Request{
+		Path:         "login",
+		Body:         req,
+		AssertStatus: http.StatusOK,
+		BindResponse: &resp,
+		IsPublic:     true,
+	})
+
+	assert.DatabaseHas(t, "auth_tokens", utils.M{
+		"user_id": user.ID,
+	})
+}
+
+func TestViewCurrentUser(t *testing.T) {
+	var resp models.User
+
+	apitest.GET(t, apitest.Request{
+		Path:         "user",
+		AssertStatus: http.StatusOK,
+		BindResponse: &resp,
+	})
+
+	assert.Equals(t, apitest.AuthUser.ID, resp.ID)
+	assert.Equals(t, apitest.AuthUser.FirstName, resp.FirstName)
+	assert.Equals(t, apitest.AuthUser.LastName, resp.LastName)
+	assert.Equals(t, "", resp.Password)
 }
