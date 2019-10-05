@@ -1,6 +1,7 @@
 package user
 
 import (
+	"github.com/vovainside/vobook/cmd/server/errors"
 	"github.com/vovainside/vobook/database"
 	"github.com/vovainside/vobook/database/models"
 )
@@ -19,5 +20,43 @@ func FindByEmail(email string) (elem models.User, err error) {
 		Where("email=?", email).
 		First()
 
+	return
+}
+
+func FindByID(id string) (elem models.User, err error) {
+	err = database.ORM().
+		Model(&elem).
+		Where("id=?", id).
+		First()
+
+	return
+}
+
+func EmailVerified(id, email string) (err error) {
+	if email != "" {
+		var count int
+		count, err = database.ORM().Model(&models.User{}).
+			Where("email = ?", email).
+			Where("id != ?", id).
+			Count()
+		if err != nil {
+			return
+		}
+		if count > 0 {
+			err = errors.EmailChangeEmailAlreadyExists
+			return
+		}
+	}
+
+	q := database.ORM().
+		Model(&models.User{}).
+		Set("email_verified = true").
+		Where("id = ?", id)
+
+	if email != "" {
+		q.Set("email = ?", email)
+	}
+
+	_, err = q.Update()
 	return
 }

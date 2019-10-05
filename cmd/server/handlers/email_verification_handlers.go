@@ -2,42 +2,47 @@ package handlers
 
 import (
 	"net/http"
+	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/vovainside/vobook/cmd/server/errors"
-	"github.com/vovainside/vobook/cmd/server/requests"
+	"github.com/vovainside/vobook/cmd/server/responses"
+	"github.com/vovainside/vobook/config"
 	emailverification "github.com/vovainside/vobook/domain/email_verification"
 	"github.com/vovainside/vobook/domain/user"
 )
 
 func VerifyEmail(c *gin.Context) {
-	var req requests.RegisterUser
+	id := c.Param("id")
 
-	u, err := req.Validate()
-	if err != nil {
-		abort422(c, err)
-		return
-	}
-
-	_, err = user.FindByEmail(req.Email)
-	if err == nil {
-		abort(c, errors.ReqisterUserEmailExists)
-		return
-	}
-
-	err = user.Create(u)
+	model, err := emailverification.FindByID(id)
 	if err != nil {
 		abort(c, err)
 		return
 	}
 
-	err = emailverification.Create(u.ID, u.Email)
+	if model.CreatedAt.Add(config.Get().EmailVerificationLifetime).Before(time.Now()) {
+		abort(c, errors.EmailVerificationExpired)
+		return
+	}
+
+	userEl, err := user.FindByID(model.UserID)
 	if err != nil {
 		abort(c, err)
 		return
 	}
 
-	// TODO send email verification email
+	err = user.EmailVerified(userEl.ID, model.Email)
+	if err != nil {
+		abort(c, err)
+		return
+	}
 
-	c.JSON(http.StatusOK, u)
+	err = emailverification.Delete(id)
+	if err != nil {
+		abort(c, err)
+		return
+	}
+
+	c.JSON(http.StatusOK, responses.OK("Your email successfully verified"))
 }

@@ -19,7 +19,7 @@ create table users (
 create table email_verifications (
     id uuid primary key not null default gen_random_uuid(),
     user_id uuid references users (id),
-    email text not null,
+    email text,
     created_at timestamptz not null
 );
 `

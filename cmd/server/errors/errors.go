@@ -7,7 +7,11 @@ import (
 )
 
 var (
-	ReqisterUserEmailExists = New422("User with this email already registered")
+	ReqisterUserEmailExists       = New422("User with this email already registered")
+	EmailVerificationNotExists    = New422("Invalid verification code")
+	EmailVerificationExpired      = New422("E-mail verification code expired")
+	EmailVerificationInvalidEmail = New422("Invalid email")
+	EmailChangeEmailAlreadyExists = New422("Email already in use by another user")
 )
 
 func New400(message string) error {

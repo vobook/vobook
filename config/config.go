@@ -4,8 +4,9 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
+	"time"
 
-	"gopkg.in/yaml.v2"
+	"gopkg.in/yaml.v3"
 )
 
 const (
@@ -49,7 +50,8 @@ type Config struct {
 
 	TelegramBotAPI string `yaml:"telegram_bot_api"`
 
-	LogsFilePath string
+	LogsFilePath              string
+	EmailVerificationLifetime time.Duration `yaml:"email_verification_lifetime"`
 }
 
 var instance *Config
