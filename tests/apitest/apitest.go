@@ -83,6 +83,10 @@ func makeRequest(t *testing.T, r Request) *httptest.ResponseRecorder {
 	req.Header.Set("Accept", "application/json")
 	req.Header.Set("X-Client", "1")
 
+	for k, v := range r.Headers {
+		req.Header.Set(k, v)
+	}
+
 	if !r.IsPublic {
 		if authToken == "" {
 			Login(t)

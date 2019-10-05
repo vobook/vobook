@@ -7,6 +7,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/vovainside/vobook/cmd/server/errors"
 	"github.com/vovainside/vobook/cmd/server/handlers"
+	"github.com/vovainside/vobook/database/models"
 	authtoken "github.com/vovainside/vobook/domain/auth_token"
 )
 
@@ -29,6 +30,10 @@ func TokenAuth(c *gin.Context) {
 		handlers.Abort(c, err)
 		return
 	}
+
+	elem.ClientID = models.ClientID(c.GetInt("clientID"))
+	elem.ClientIP = c.Request.RemoteAddr
+	elem.UserAgent = c.Request.UserAgent()
 
 	if sig != authtoken.Sign(&elem) {
 		handlers.Abort(c, errors.AuthTokenInvalid)

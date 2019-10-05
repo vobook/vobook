@@ -4,12 +4,11 @@ import (
 	"net/http"
 	"testing"
 
-	"github.com/vovainside/vobook/database"
-
 	fake "github.com/brianvoe/gofakeit"
 	"github.com/vovainside/vobook/cmd/server/errors"
 	"github.com/vovainside/vobook/cmd/server/requests"
 	"github.com/vovainside/vobook/cmd/server/responses"
+	"github.com/vovainside/vobook/database"
 	"github.com/vovainside/vobook/database/factories"
 	"github.com/vovainside/vobook/database/models"
 	"github.com/vovainside/vobook/tests/apitest"
