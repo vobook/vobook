@@ -16,7 +16,7 @@ func DatabaseCount(t *testing.T, table string, data utils.M) int {
 	args := []interface{}{}
 	wheres := []string{}
 
-	args = append(args, pg.F(table))
+	args = append(args, pg.Ident(table))
 
 	for col, val := range data {
 		if val == nil {

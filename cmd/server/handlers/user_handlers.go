@@ -50,8 +50,8 @@ func RegisterUser(c *gin.Context) {
 		return
 	}
 
-	err = mail.SendTemplate(elem.Email, "email-confirmation", mail.Replace{
-		"link": fmt.Sprintf(config.Get().WebClientAddr+"/confirm-email/%s", token.Token),
+	err = mail.SendTemplate(elem.Email, "email-verification", mail.Replace{
+		"link": fmt.Sprintf(config.Get().WebClientAddr+"/verify-email/%s", token.Token),
 	})
 	if err != nil {
 		Abort(c, err)
@@ -59,6 +59,53 @@ func RegisterUser(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, elem)
+}
+
+func ChangeEmail(c *gin.Context) {
+	var req requests.ChangeEmail
+	if !bindJSON(c, &req) {
+		return
+	}
+
+	userEl := authUser(c)
+	err := bcrypt.CompareHashAndPassword([]byte(userEl.Password), []byte(req.Password))
+	if err != nil {
+		abort422(c, errors.WrongPassword)
+		return
+	}
+
+	existing, err := user.FindByEmail(req.Email)
+	if err != nil && err != errors.UserByEmailNotFound {
+		Abort(c, err)
+		return
+	}
+	if err == nil {
+		if existing.ID != userEl.ID {
+			err = errors.EmailChangeEmailInUser
+		} else {
+			err = errors.EmailChangeSameEmail
+		}
+		if err != nil {
+			Abort(c, err)
+			return
+		}
+	}
+
+	token, err := emailverification.Create(userEl.ID, req.Email)
+	if err != nil {
+		Abort(c, err)
+		return
+	}
+
+	err = mail.SendTemplate(req.Email, "change-email-verification", mail.Replace{
+		"link": fmt.Sprintf(config.Get().WebClientAddr+"/verify-email/%s", token.Token),
+	})
+	if err != nil {
+		Abort(c, err)
+		return
+	}
+
+	c.JSON(http.StatusOK, responses.OK("To change your email please click the link we just sent to your new email address"))
 }
 
 func ChangePassword(c *gin.Context) {

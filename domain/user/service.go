@@ -57,7 +57,7 @@ func EmailVerified(id, email string) (err error) {
 			return
 		}
 		if count > 0 {
-			err = errors.EmailChangeEmailAlreadyExists
+			err = errors.EmailChangeEmailInUser
 			return
 		}
 	}

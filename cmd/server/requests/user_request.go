@@ -38,6 +38,27 @@ func (r *RegisterUser) Validate() (err error) {
 	return
 }
 
+type ChangeEmail struct {
+	Email    string `json:"email"`
+	Password string `json:"password"`
+}
+
+func (r *ChangeEmail) Validate() (err error) {
+	err = validation.ValidateStruct(r,
+		validation.Field(
+			&r.Email,
+			validation.Required,
+			is.Email,
+		),
+		validation.Field(
+			&r.Password,
+			validation.Required,
+		),
+	)
+
+	return
+}
+
 func (r *RegisterUser) ToUser() (m *models.User, err error) {
 	password, err := utils.HashPassword(r.Password)
 	if err != nil {

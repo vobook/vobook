@@ -1,4 +1,4 @@
-subject: "{app-name}: Email confirmation"
+subject: "{app-name}: Email verification"
 body: >
   <p>Somebody registered at {app-name} using this email. If it is not you, simple ignore this message.</p>
   <p>To verify your email follow this link: <a href="{link}">Verify email</a>

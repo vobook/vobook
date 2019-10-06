@@ -4,18 +4,16 @@ import (
 	"net/http"
 	"testing"
 
-	"github.com/vovainside/vobook/config"
-
-	"github.com/vovainside/vobook/services/mail"
-
 	fake "github.com/brianvoe/gofakeit"
 	"github.com/vovainside/vobook/cmd/server/errors"
 	"github.com/vovainside/vobook/cmd/server/requests"
 	"github.com/vovainside/vobook/cmd/server/responses"
+	"github.com/vovainside/vobook/config"
 	"github.com/vovainside/vobook/database"
 	"github.com/vovainside/vobook/database/factories"
 	"github.com/vovainside/vobook/database/models"
 	"github.com/vovainside/vobook/domain/user"
+	"github.com/vovainside/vobook/services/mail"
 	"github.com/vovainside/vobook/tests/apitest"
 	"github.com/vovainside/vobook/tests/assert"
 	"github.com/vovainside/vobook/utils"
@@ -55,6 +53,44 @@ func TestRegisterUser(t *testing.T) {
 
 	assert.DatabaseHas(t, "email_verifications", utils.M{
 		"user_id": resp.ID,
+		"email":   req.Email,
+	})
+
+	sentMail := mail.TestRepo.GetMail(req.Email)
+	assert.Equals(t, config.Get().Mail.From, sentMail.From)
+	assert.Equals(t, []string{req.Email}, sentMail.To)
+	assert.True(t, sentMail.Subject != "")
+	assert.True(t, sentMail.Body != "")
+}
+
+func TestChangeEmail(t *testing.T) {
+	apitest.Login(t)
+	email, err := utils.UniqueEmail("users")
+	assert.NotError(t, err)
+
+	elem := apitest.User(t)
+	password := elem.Password
+	passwordHash, err := utils.HashPassword(password)
+	assert.NotError(t, err)
+
+	err = user.UpdatePassword(elem.ID, passwordHash)
+	assert.NotError(t, err)
+
+	req := requests.ChangeEmail{
+		Email:    email,
+		Password: password,
+	}
+
+	var resp responses.Success
+	apitest.POST(t, apitest.Request{
+		Path:         "change-email",
+		Body:         req,
+		AssertStatus: http.StatusOK,
+		BindResponse: &resp,
+	})
+
+	assert.DatabaseHas(t, "email_verifications", utils.M{
+		"user_id": apitest.AuthUser.ID,
 		"email":   req.Email,
 	})
 

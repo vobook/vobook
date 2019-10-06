@@ -8,4 +8,5 @@ import (
 func userRoutes(r *gin.RouterGroup) {
 	r.GET("user/", handlers.GetAuthUser)
 	r.POST("change-password/", handlers.ChangePassword)
+	r.POST("change-email/", handlers.ChangeEmail)
 }
