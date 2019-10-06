@@ -7,5 +7,5 @@ import (
 
 func userRoutes(r *gin.RouterGroup) {
 	r.GET("user/", handlers.GetAuthUser)
-	r.POST("change-password/", handlers.ChangeUserPassword)
+	r.POST("change-password/", handlers.ChangePassword)
 }

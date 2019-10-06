@@ -1,6 +1,7 @@
 package user
 
 import (
+	"github.com/go-pg/pg"
 	"github.com/vovainside/vobook/cmd/server/errors"
 	"github.com/vovainside/vobook/database"
 	"github.com/vovainside/vobook/database/models"
@@ -19,6 +20,9 @@ func FindByEmail(email string) (elem models.User, err error) {
 		Model(&elem).
 		Where("email=?", email).
 		First()
+	if err == pg.ErrNoRows {
+		err = errors.UserByEmailNotFound
+	}
 
 	return
 }

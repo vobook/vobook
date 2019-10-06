@@ -1,6 +1,7 @@
 package utils
 
 import (
+	"crypto/sha256"
 	"fmt"
 	"math/rand"
 
@@ -57,4 +58,11 @@ func RandomToken(length int) string {
 		token[i] = chars[rand.Intn(len(chars))]
 	}
 	return string(token)
+}
+
+func RandomHash() string {
+	token := RandomToken(64)
+	hash := sha256.Sum256([]byte(token))
+
+	return fmt.Sprintf("%x", hash)
 }

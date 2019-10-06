@@ -165,3 +165,62 @@ func TestChangeUserPassword(t *testing.T) {
 
 	assert.Equals(t, apitest.AuthUser.ID, elem.ID)
 }
+
+func TestPasswordReset(t *testing.T) {
+	userEl, err := factories.CreateUser()
+	assert.NotError(t, err)
+
+	req := requests.ResetPasswordStart{
+		Email: userEl.Email,
+	}
+
+	// password reset start
+	var resp responses.Success
+	apitest.POST(t, apitest.Request{
+		Path:         "reset-password",
+		Body:         req,
+		AssertStatus: http.StatusOK,
+		BindResponse: &resp,
+	})
+
+	token := &models.PasswordReset{}
+	err = database.ORM().Model(token).Where("user_id = ?", userEl.ID).First()
+	assert.NotError(t, err)
+
+	// check token
+	var resp2 string
+	apitest.POST(t, apitest.Request{
+		Path:         "reset-password/" + token.Token,
+		AssertStatus: http.StatusOK,
+		BindResponse: &resp2,
+	})
+
+	// change password
+	req3 := requests.ResetPassword{
+		Token:    token.Token,
+		Password: utils.RandomString(10),
+	}
+	var resp3 responses.Success
+	apitest.PUT(t, apitest.Request{
+		Path:         "reset-password",
+		Body:         req3,
+		AssertStatus: http.StatusOK,
+		BindResponse: &resp3,
+	})
+
+	// login with new password
+	req4 := requests.Login{
+		Email:    userEl.Email,
+		Password: req3.Password,
+	}
+	var resp4 responses.Login
+	apitest.POST(t, apitest.Request{
+		Path:         "login",
+		Body:         req4,
+		AssertStatus: http.StatusOK,
+		BindResponse: &resp4,
+		IsPublic:     true,
+	})
+
+	assert.Equals(t, userEl.ID, resp4.User.ID)
+}

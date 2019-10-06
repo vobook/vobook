@@ -2,8 +2,9 @@ package handlers
 
 import (
 	"net/http"
+	"time"
 
-	"github.com/vovainside/vobook/utils"
+	passwordreset "github.com/vovainside/vobook/domain/password_reset"
 
 	"github.com/gin-gonic/gin"
 	"github.com/vovainside/vobook/cmd/server/errors"
@@ -13,6 +14,7 @@ import (
 	authtoken "github.com/vovainside/vobook/domain/auth_token"
 	emailverification "github.com/vovainside/vobook/domain/email_verification"
 	"github.com/vovainside/vobook/domain/user"
+	"github.com/vovainside/vobook/utils"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -51,7 +53,7 @@ func RegisterUser(c *gin.Context) {
 	c.JSON(http.StatusOK, u)
 }
 
-func ChangeUserPassword(c *gin.Context) {
+func ChangePassword(c *gin.Context) {
 	var req requests.ChangeUserPassword
 	if !bindJSON(c, &req) {
 		return
@@ -76,7 +78,7 @@ func ChangeUserPassword(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, responses.OK("You password successfully changed"))
+	c.JSON(http.StatusOK, responses.OK("Your password successfully changed"))
 }
 
 func Login(c *gin.Context) {
@@ -120,4 +122,84 @@ func Login(c *gin.Context) {
 
 func GetAuthUser(c *gin.Context) {
 	c.JSON(http.StatusOK, authUser(c))
+}
+
+func ResetPasswordStart(c *gin.Context) {
+	var req requests.ResetPasswordStart
+	if !bindJSON(c, &req) {
+		return
+	}
+
+	elem, err := user.FindByEmail(req.Email)
+	if err != nil {
+		Abort(c, err)
+		return
+	}
+
+	token := &models.PasswordReset{
+		UserID: elem.ID,
+	}
+	err = passwordreset.Create(token)
+	if err != nil {
+		Abort(c, err)
+		return
+	}
+
+	// TODO send to email
+
+	c.JSON(http.StatusOK, responses.OK("Password change confirmation sent to your email"))
+}
+
+func ResetPasswordCheckToken(c *gin.Context) {
+	token := c.Param("token")
+	elem, err := passwordreset.Find(token)
+	if err != nil {
+		Abort(c, err)
+		return
+	}
+
+	if elem.ExpiresAt.Before(time.Now()) {
+		Abort(c, errors.PasswordResetTokenExpired)
+		return
+	}
+
+	c.JSON(http.StatusOK, "OK")
+}
+
+func ResetPassword(c *gin.Context) {
+	var req requests.ResetPassword
+	if !bindJSON(c, &req) {
+		return
+	}
+
+	elem, err := passwordreset.Find(req.Token)
+	if err != nil {
+		Abort(c, err)
+		return
+	}
+
+	if elem.ExpiresAt.Before(time.Now()) {
+		Abort(c, errors.PasswordResetTokenExpired)
+		return
+	}
+
+	userEl, err := user.FindByID(elem.UserID)
+	if err != nil {
+		Abort(c, errors.PasswordResetTokenExpired)
+		return
+	}
+
+	password, err := utils.HashPassword(req.Password)
+	if err != nil {
+		Abort(c, err)
+		return
+	}
+
+	err = user.UpdatePassword(userEl.ID, password)
+	if err != nil {
+		Abort(c, err)
+		return
+	}
+
+	c.JSON(http.StatusOK, responses.OK("Your password successfully changed"))
 }

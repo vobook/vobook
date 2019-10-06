@@ -28,5 +28,6 @@ telegram_bot_api: ""
 
 email_verification_lifetime: 2h
 auth_token_lifetime: 15m
+password_reset_lifetime: 30m
 
 api_base_path: api

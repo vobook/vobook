@@ -17,6 +17,9 @@ var (
 	AuthTokenInvalid              = New401("Invalid token")
 	AuthTokenExpired              = New401("Token expired")
 	WrongPassword                 = New422("Wrong password")
+	UserByEmailNotFound           = New404("User with this email not exists")
+	PasswordResetTokenNotFound    = New404("Invalid password reset request")
+	PasswordResetTokenExpired     = New404("Password reset request expired")
 )
 
 func New400(message string) error {
@@ -35,6 +38,13 @@ func New401(message string) error {
 func New422(message string) error {
 	return Error{
 		Code:    http.StatusUnprocessableEntity,
+		Message: message,
+	}
+}
+
+func New404(message string) error {
+	return Error{
+		Code:    http.StatusNotFound,
 		Message: message,
 	}
 }

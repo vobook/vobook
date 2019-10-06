@@ -94,3 +94,39 @@ func (r *ChangeUserPassword) Validate() (err error) {
 
 	return
 }
+
+type ResetPasswordStart struct {
+	Email string `json:"email"`
+}
+
+func (r *ResetPasswordStart) Validate() (err error) {
+	err = validation.ValidateStruct(r,
+		validation.Field(
+			&r.Email,
+			validation.Required,
+			is.Email,
+		),
+	)
+
+	return
+}
+
+type ResetPassword struct {
+	Token    string `json:"token"`
+	Password string `json:"password"`
+}
+
+func (r *ResetPassword) Validate() (err error) {
+	err = validation.ValidateStruct(r,
+		validation.Field(
+			&r.Token,
+			validation.Required,
+		),
+		validation.Field(
+			&r.Password,
+			validation.Required,
+		),
+	)
+
+	return
+}
