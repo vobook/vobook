@@ -1,19 +1,21 @@
 package handlers
 
 import (
+	"fmt"
 	"net/http"
 	"time"
-
-	passwordreset "github.com/vovainside/vobook/domain/password_reset"
 
 	"github.com/gin-gonic/gin"
 	"github.com/vovainside/vobook/cmd/server/errors"
 	"github.com/vovainside/vobook/cmd/server/requests"
 	"github.com/vovainside/vobook/cmd/server/responses"
+	"github.com/vovainside/vobook/config"
 	"github.com/vovainside/vobook/database/models"
 	authtoken "github.com/vovainside/vobook/domain/auth_token"
 	emailverification "github.com/vovainside/vobook/domain/email_verification"
+	passwordreset "github.com/vovainside/vobook/domain/password_reset"
 	"github.com/vovainside/vobook/domain/user"
+	"github.com/vovainside/vobook/services/mail"
 	"github.com/vovainside/vobook/utils"
 	"golang.org/x/crypto/bcrypt"
 )
@@ -24,7 +26,7 @@ func RegisterUser(c *gin.Context) {
 		return
 	}
 
-	u, err := req.ToUser()
+	elem, err := req.ToUser()
 	if err != nil {
 		abort422(c, err)
 		return
@@ -36,21 +38,27 @@ func RegisterUser(c *gin.Context) {
 		return
 	}
 
-	err = user.Create(u)
+	err = user.Create(elem)
 	if err != nil {
 		Abort(c, err)
 		return
 	}
 
-	err = emailverification.Create(u.ID, u.Email)
+	token, err := emailverification.Create(elem.ID, elem.Email)
 	if err != nil {
 		Abort(c, err)
 		return
 	}
 
-	// TODO send email verification email
+	err = mail.SendTemplate(elem.Email, "email-confirmation", mail.Replace{
+		"link": fmt.Sprintf(config.Get().WebClientAddr+"/confirm-email/%s", token.Token),
+	})
+	if err != nil {
+		Abort(c, err)
+		return
+	}
 
-	c.JSON(http.StatusOK, u)
+	c.JSON(http.StatusOK, elem)
 }
 
 func ChangePassword(c *gin.Context) {
@@ -145,7 +153,13 @@ func ResetPasswordStart(c *gin.Context) {
 		return
 	}
 
-	// TODO send to email
+	err = mail.SendTemplate(elem.Email, "password-reset", mail.Replace{
+		"link": fmt.Sprintf(config.Get().WebClientAddr+"/reset-password/%s", token.Token),
+	})
+	if err != nil {
+		Abort(c, err)
+		return
+	}
 
 	c.JSON(http.StatusOK, responses.OK("Password change confirmation sent to your email"))
 }

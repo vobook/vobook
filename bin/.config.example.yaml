@@ -19,6 +19,7 @@ mail:
   password: password
   from: vobook <mail@example.com>
   stub: mails
+  templates: ../assets/emails
 
 server:
   host: localhost
@@ -34,3 +35,4 @@ auth_token_lifetime: 15m
 password_reset_lifetime: 30m
 
 api_base_path: api
+web_client_addr:

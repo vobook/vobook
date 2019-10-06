@@ -23,6 +23,9 @@ func UniqueEmail(table string, col ...string) (string, error) {
 		if err == pg.ErrNoRows {
 			return email, nil
 		}
+		if err != nil {
+			return "", err
+		}
 
 		length++
 	}

@@ -13,9 +13,9 @@ import (
 )
 
 func VerifyEmail(c *gin.Context) {
-	id := c.Param("id")
+	token := c.Param("token")
 
-	model, err := emailverification.FindByID(id)
+	model, err := emailverification.FindByToken(token)
 	if err != nil {
 		Abort(c, err)
 		return
@@ -38,7 +38,7 @@ func VerifyEmail(c *gin.Context) {
 		return
 	}
 
-	err = emailverification.Delete(id)
+	err = emailverification.DeleteByToken(token)
 	if err != nil {
 		Abort(c, err)
 		return

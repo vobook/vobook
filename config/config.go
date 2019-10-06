@@ -32,13 +32,14 @@ type Config struct {
 	}
 
 	Mail struct {
-		Host     string
-		Port     int
-		User     string
-		Password string
-		Driver   string
-		From     string
-		Stub     string
+		Host      string
+		Port      int
+		User      string
+		Password  string
+		Driver    string
+		From      string
+		Stub      string
+		Templates string
 	}
 
 	Server struct {
@@ -57,15 +58,16 @@ type Config struct {
 	AuthTokenLifetime         time.Duration `yaml:"auth_token_lifetime"`
 	PasswordResetLifetime     time.Duration `yaml:"password_reset_lifetime"`
 
-	ApiBasePath string `yaml:"api_base_path"`
+	ApiBasePath   string `yaml:"api_base_path"`
+	WebClientAddr string `yaml:"web_client_addr"`
 }
 
-var instance *Config
+var conf *Config
 
 // Get returns config from .config.yaml
 func Get() *Config {
-	if instance != nil {
-		return instance
+	if conf != nil {
+		return conf
 	}
 
 	name := ".config.yaml"
@@ -78,27 +80,34 @@ func Get() *Config {
 		}
 		panic(msg)
 	}
-	err = yaml.Unmarshal(yamlConf, &instance)
+	err = yaml.Unmarshal(yamlConf, &conf)
 	if err != nil {
 		panic(err)
 	}
 
-	return instance
+	if conf.WebClientAddr == "" {
+		conf.WebClientAddr = conf.Server.Host
+		if conf.Server.Port != "" {
+			conf.WebClientAddr += ":" + conf.Server.Port
+		}
+	}
+
+	return conf
 }
 
 func Reload() *Config {
-	instance = nil
+	conf = nil
 	return Get()
 }
 
 func IsDevEnv() bool {
-	return instance.App.Env == DevEnv
+	return conf.App.Env == DevEnv
 }
 
 func IsTestEnv() bool {
-	return instance.App.Env == TestEnv
+	return conf.App.Env == TestEnv
 }
 
 func IsReleaseEnv() bool {
-	return instance.App.Env == ReleaseEnv
+	return conf.App.Env == ReleaseEnv
 }

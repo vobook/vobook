@@ -35,7 +35,7 @@ func (drv TestDriver) Send(msg Message) (err error) {
 		return
 	}
 
-	TestRepo.Store(msg.To, msg)
+	TestRepo.Store(msg.To[0], msg)
 	return
 }
 
@@ -43,13 +43,14 @@ type testMails struct {
 	sync.Map
 }
 
-func (m testMails) GetMail(to string) (msg Message) {
+func (m testMails) GetMail(to string) (msg *Message) {
 	v, ok := m.Load(to)
 	if !ok {
-		return
+		return nil
 	}
 
-	return v.(Message)
+	message := v.(Message)
+	return &message
 }
 
 var TestRepo = testMails{}

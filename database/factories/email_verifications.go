@@ -17,9 +17,15 @@ func MakeEmailVerification() (m models.EmailVerification, err error) {
 		return
 	}
 
+	token, err := utils.UniqueToken("email_verifications")
+	if err != nil {
+		return
+	}
+
 	m = models.EmailVerification{
 		Email:  email,
 		UserID: userEl.ID,
+		Token:  token,
 	}
 
 	return

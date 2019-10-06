@@ -4,6 +4,10 @@ import (
 	"net/http"
 	"testing"
 
+	"github.com/vovainside/vobook/config"
+
+	"github.com/vovainside/vobook/services/mail"
+
 	fake "github.com/brianvoe/gofakeit"
 	"github.com/vovainside/vobook/cmd/server/errors"
 	"github.com/vovainside/vobook/cmd/server/requests"
@@ -53,16 +57,22 @@ func TestRegisterUser(t *testing.T) {
 		"user_id": resp.ID,
 		"email":   req.Email,
 	})
+
+	sentMail := mail.TestRepo.GetMail(req.Email)
+	assert.Equals(t, config.Get().Mail.From, sentMail.From)
+	assert.Equals(t, []string{req.Email}, sentMail.To)
+	assert.True(t, sentMail.Subject != "")
+	assert.True(t, sentMail.Body != "")
 }
 
 func TestRegisterUser_UserAlreadyExists(t *testing.T) {
-	user, err := factories.CreateUser()
+	userEl, err := factories.CreateUser()
 	assert.NotError(t, err)
 
 	req := requests.RegisterUser{
 		FirstName: fake.FirstName(),
 		LastName:  fake.LastName(),
-		Email:     user.Email,
+		Email:     userEl.Email,
 		Password:  utils.RandomString(),
 	}
 
@@ -79,19 +89,19 @@ func TestRegisterUser_UserAlreadyExists(t *testing.T) {
 }
 
 func TestUserLogin(t *testing.T) {
-	user, err := factories.MakeUser()
+	userEl, err := factories.MakeUser()
 	assert.NotError(t, err)
 
 	password := utils.RandomString(10)
 	passwordHash, err := utils.HashPassword(password)
 	assert.NotError(t, err)
 
-	user.Password = passwordHash
-	err = database.ORM().Insert(&user)
+	userEl.Password = passwordHash
+	err = database.ORM().Insert(&userEl)
 	assert.NotError(t, err)
 
 	req := requests.Login{
-		Email:    user.Email,
+		Email:    userEl.Email,
 		Password: password,
 	}
 
@@ -105,7 +115,7 @@ func TestUserLogin(t *testing.T) {
 	})
 
 	assert.DatabaseHas(t, "auth_tokens", utils.M{
-		"user_id": user.ID,
+		"user_id": userEl.ID,
 	})
 }
 

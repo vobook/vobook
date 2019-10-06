@@ -9,7 +9,11 @@ import (
 )
 
 func Create(elem *models.PasswordReset) (err error) {
-	elem.Token = utils.RandomHash()
+	token, err := utils.UniqueToken("password_resets")
+	if err != nil {
+		return
+	}
+	elem.Token = token
 
 	_, err = database.ORM().
 		Model(elem).

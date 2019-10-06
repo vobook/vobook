@@ -9,12 +9,17 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/vovainside/vobook/cmd/server/routes"
 	"github.com/vovainside/vobook/config"
+	"github.com/vovainside/vobook/logger"
+	"github.com/vovainside/vobook/services/mail"
 )
 
 func main() {
 	conf := config.Get()
-	r := gin.Default()
+	logger.Setup()
 
+	mail.InitDrivers()
+
+	r := gin.Default()
 	routes.Register(r)
 
 	server := &http.Server{

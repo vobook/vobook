@@ -25,7 +25,7 @@ func TestVerifyExistingEmail(t *testing.T) {
 
 	var resp responses.Success
 	apitest.GET(t, apitest.Request{
-		Path:         "verify-email/" + ev.ID,
+		Path:         "verify-email/" + ev.Token,
 		AssertStatus: http.StatusOK,
 		BindResponse: &resp,
 		IsPublic:     true,
@@ -46,7 +46,7 @@ func TestVerifyNewEmail(t *testing.T) {
 
 	var resp responses.Success
 	apitest.GET(t, apitest.Request{
-		Path:         "verify-email/" + ev.ID,
+		Path:         "verify-email/" + ev.Token,
 		AssertStatus: http.StatusOK,
 		BindResponse: &resp,
 		IsPublic:     true,
@@ -72,7 +72,7 @@ func TestVerifyNEmail_ShouldBeExpired(t *testing.T) {
 
 	var resp responses.Error
 	apitest.GET(t, apitest.Request{
-		Path:         "verify-email/" + ev.ID,
+		Path:         "verify-email/" + ev.Token,
 		AssertStatus: http.StatusUnprocessableEntity,
 		BindResponse: &resp,
 		IsPublic:     true,

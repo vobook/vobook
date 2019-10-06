@@ -37,8 +37,8 @@ func UniqueToken(table string, opts ...UniqueTokenOpts) (string, error) {
 
 	maxTries := len(Chars()) * opt.Length
 	for i := 0; i < maxTries; i++ {
-		token := RandomToken(opt.Length)
-		_, err := database.ORM().ExecOne("SELECT * FROM ? WHERE ? = ?", pg.F(table), pg.F(opt.Column), token)
+		token := randomString(opt.Length)
+		_, err := database.ORM().ExecOne("SELECT * FROM ? WHERE ? = ?", pg.Ident(table), pg.Ident(opt.Column), token)
 		if err == pg.ErrNoRows {
 			return token, nil
 		}

@@ -1,14 +1,20 @@
 package mail
 
 import (
+	"bytes"
 	"errors"
 	"fmt"
+	"io/ioutil"
+	"path"
 
 	log "github.com/sirupsen/logrus"
 	"github.com/vovainside/vobook/config"
+	"gopkg.in/yaml.v3"
 )
 
 const TestDriverName = "test"
+
+var Drivers map[string]Driver
 
 type Message struct {
 	From    string   `json:"from"`
@@ -22,9 +28,13 @@ type Driver interface {
 	Send(m Message) error
 }
 
-var Drivers = map[string]Driver{
-	"go-mail":      NewGoMailDriver(),
-	TestDriverName: NewTestDriver(),
+type Replace map[string]string
+
+func InitDrivers() {
+	Drivers = map[string]Driver{
+		"go-mail":      NewGoMailDriver(),
+		TestDriverName: NewTestDriver(),
+	}
 }
 
 var ErrToAddrNotSet = errors.New("to address not set")
@@ -64,4 +74,45 @@ func SendSimple(to, subject, body string) (err error) {
 		Subject: subject,
 		Body:    body,
 	})
+}
+
+func LoadTemplate(name string, replace Replace) (m Message, err error) {
+	fname := path.Join(config.Get().Mail.Templates, name+".yaml")
+	data, err := ioutil.ReadFile(fname)
+	if err != nil {
+		return
+	}
+
+	data = replacePlaceholders(data, replace)
+	err = yaml.Unmarshal(data, &m)
+	return
+}
+
+func SendTemplate(to, template string, replace Replace) (err error) {
+	m, err := LoadTemplate(template, replace)
+	if err != nil {
+		return
+	}
+
+	m.To = []string{to}
+	return Send(m)
+}
+
+func replacePlaceholders(data []byte, replace Replace) []byte {
+	globals := Replace{
+		"app-name": config.Get().App.Name,
+	}
+
+	for k, v := range globals {
+		_, ok := replace[k]
+		if !ok {
+			replace[k] = v
+		}
+	}
+
+	for k, v := range replace {
+		data = bytes.ReplaceAll(data, []byte("{"+k+"}"), []byte(v))
+	}
+
+	return data
 }

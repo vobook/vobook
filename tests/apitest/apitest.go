@@ -68,6 +68,8 @@ func init() {
 	database.SetDB(tx)
 	DB = database.ORM()
 
+	mail.InitDrivers()
+
 	router = gin.New()
 	routes.Register(router)
 }
