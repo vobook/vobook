@@ -23,8 +23,6 @@ func (drv TestDriver) Send(msg Message) (err error) {
 		return
 	}
 
-	spew.Dump(string(mBytes))
-
 	stub := config.Get().Mail.Stub
 	err = os.MkdirAll(stub, 0755)
 	if err != nil {
