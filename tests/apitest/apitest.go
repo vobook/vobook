@@ -11,6 +11,8 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/vovainside/vobook/services/mail"
+
 	"github.com/gin-gonic/gin"
 	"github.com/go-pg/pg/orm"
 	"github.com/vovainside/vobook/cmd/server/routes"
@@ -52,7 +54,7 @@ func init() {
 
 	// override config
 	conf.LogsFilePath = "tests.log"
-	conf.Mail.Driver = "test"
+	conf.Mail.Driver = mail.TestDriverName
 	conf.App.Env = config.TestEnv
 
 	logger.Setup()

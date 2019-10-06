@@ -1,0 +1,9 @@
+{
+    "from": "vobook \u003cmail@example.com\u003e",
+    "to": [
+        "abc@abc.co"
+    ],
+    "cc": null,
+    "subject": "Hello2",
+    "body": "world2"
+}

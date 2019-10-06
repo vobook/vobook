@@ -32,11 +32,13 @@ type Config struct {
 	}
 
 	Mail struct {
-		Server   string
-		Port     string
+		Host     string
+		Port     int
 		User     string
 		Password string
 		Driver   string
+		From     string
+		Stub     string
 	}
 
 	Server struct {
