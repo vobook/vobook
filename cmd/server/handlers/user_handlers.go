@@ -26,7 +26,7 @@ func RegisterUser(c *gin.Context) {
 		return
 	}
 
-	elem, err := req.ToUser()
+	elem, err := req.ToModel()
 	if err != nil {
 		abort422(c, err)
 		return
@@ -177,6 +177,24 @@ func Login(c *gin.Context) {
 
 func GetAuthUser(c *gin.Context) {
 	c.JSON(http.StatusOK, authUser(c))
+}
+
+func UpdateAuthUser(c *gin.Context) {
+	var req requests.UpdateUser
+	if !bindJSON(c, &req) {
+		return
+	}
+
+	userEl := authUser(c)
+	req.ToModel(&userEl)
+
+	err := user.Update(&userEl)
+	if err != nil {
+		Abort(c, err)
+		return
+	}
+
+	c.JSON(http.StatusOK, responses.OK("Saved"))
 }
 
 func ResetPasswordStart(c *gin.Context) {

@@ -178,6 +178,11 @@ func LoginAs(t *testing.T, user *models.User) {
 	authToken = authtoken.Sign(token)
 }
 
+func ReLogin(t *testing.T) {
+	Logout()
+	Login(t)
+}
+
 func Logout() {
 	AuthUser = nil
 	authToken = ""

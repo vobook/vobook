@@ -59,7 +59,7 @@ func (r *ChangeEmail) Validate() (err error) {
 	return
 }
 
-func (r *RegisterUser) ToUser() (m *models.User, err error) {
+func (r *RegisterUser) ToModel() (m *models.User, err error) {
 	password, err := utils.HashPassword(r.Password)
 	if err != nil {
 		return
@@ -130,6 +130,24 @@ func (r *ResetPasswordStart) Validate() (err error) {
 	)
 
 	return
+}
+
+type UpdateUser struct {
+	FirstName *string `json:"first_name"`
+	LastName  *string `json:"last_name"`
+}
+
+func (r *UpdateUser) Validate() (err error) {
+	return
+}
+
+func (r *UpdateUser) ToModel(m *models.User) {
+	if r.LastName != nil {
+		m.LastName = *r.LastName
+	}
+	if r.FirstName != nil {
+		m.FirstName = *r.FirstName
+	}
 }
 
 type ResetPassword struct {

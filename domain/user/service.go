@@ -46,6 +46,13 @@ func UpdatePassword(id, password string) (err error) {
 	return
 }
 
+func Update(m *models.User) (err error) {
+	err = database.ORM().
+		Update(m)
+
+	return
+}
+
 func EmailVerified(id, email string) (err error) {
 	if email != "" {
 		var count int

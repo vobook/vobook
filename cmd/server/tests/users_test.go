@@ -14,7 +14,7 @@ import (
 	"github.com/vovainside/vobook/database/models"
 	"github.com/vovainside/vobook/domain/user"
 	"github.com/vovainside/vobook/services/mail"
-	"github.com/vovainside/vobook/tests/apitest"
+	. "github.com/vovainside/vobook/tests/apitest"
 	"github.com/vovainside/vobook/tests/assert"
 	"github.com/vovainside/vobook/utils"
 )
@@ -31,7 +31,7 @@ func TestRegisterUser(t *testing.T) {
 	}
 
 	var resp models.User
-	apitest.POST(t, apitest.Request{
+	POST(t, Request{
 		Path:         "register-user",
 		Body:         req,
 		AssertStatus: http.StatusOK,
@@ -63,12 +63,36 @@ func TestRegisterUser(t *testing.T) {
 	assert.True(t, sentMail.Body != "")
 }
 
+func TestUpdateUser(t *testing.T) {
+	ReLogin(t)
+	firstName := fake.FirstName()
+	lastName := fake.LastName()
+	req := requests.UpdateUser{
+		FirstName: &firstName,
+		LastName:  &lastName,
+	}
+
+	var resp responses.Success
+	PUT(t, Request{
+		Path:         "user",
+		Body:         req,
+		AssertStatus: http.StatusOK,
+		BindResponse: &resp,
+	})
+
+	assert.DatabaseHas(t, "users", utils.M{
+		"id":         User(t).ID,
+		"first_name": firstName,
+		"last_name":  lastName,
+	})
+}
+
 func TestChangeEmail(t *testing.T) {
-	apitest.Login(t)
+	Login(t)
 	email, err := utils.UniqueEmail("users")
 	assert.NotError(t, err)
 
-	elem := apitest.User(t)
+	elem := User(t)
 	password := elem.Password
 	passwordHash, err := utils.HashPassword(password)
 	assert.NotError(t, err)
@@ -82,7 +106,7 @@ func TestChangeEmail(t *testing.T) {
 	}
 
 	var resp responses.Success
-	apitest.POST(t, apitest.Request{
+	POST(t, Request{
 		Path:         "change-email",
 		Body:         req,
 		AssertStatus: http.StatusOK,
@@ -90,7 +114,7 @@ func TestChangeEmail(t *testing.T) {
 	})
 
 	assert.DatabaseHas(t, "email_verifications", utils.M{
-		"user_id": apitest.AuthUser.ID,
+		"user_id": AuthUser.ID,
 		"email":   req.Email,
 	})
 
@@ -113,7 +137,7 @@ func TestRegisterUser_UserAlreadyExists(t *testing.T) {
 	}
 
 	var resp responses.Error
-	apitest.POST(t, apitest.Request{
+	POST(t, Request{
 		Path:         "register-user",
 		Body:         req,
 		AssertStatus: http.StatusUnprocessableEntity,
@@ -142,7 +166,7 @@ func TestUserLogin(t *testing.T) {
 	}
 
 	var resp responses.Login
-	apitest.POST(t, apitest.Request{
+	POST(t, Request{
 		Path:         "login",
 		Body:         req,
 		AssertStatus: http.StatusOK,
@@ -156,23 +180,24 @@ func TestUserLogin(t *testing.T) {
 }
 
 func TestViewCurrentUser(t *testing.T) {
+	ReLogin(t)
 	var resp models.User
-	apitest.GET(t, apitest.Request{
+	GET(t, Request{
 		Path:         "user",
 		AssertStatus: http.StatusOK,
 		BindResponse: &resp,
 	})
 
-	assert.Equals(t, apitest.AuthUser.ID, resp.ID)
-	assert.Equals(t, apitest.AuthUser.FirstName, resp.FirstName)
-	assert.Equals(t, apitest.AuthUser.LastName, resp.LastName)
+	assert.Equals(t, AuthUser.ID, resp.ID)
+	assert.Equals(t, AuthUser.FirstName, resp.FirstName)
+	assert.Equals(t, AuthUser.LastName, resp.LastName)
 	assert.Equals(t, "", resp.Password)
 }
 
 func TestChangeUserPassword(t *testing.T) {
-	apitest.Login(t)
+	Login(t)
 
-	elem := apitest.User(t)
+	elem := User(t)
 	oldPassword := elem.Password
 	oldPasswordHash, err := utils.HashPassword(oldPassword)
 	assert.NotError(t, err)
@@ -187,7 +212,7 @@ func TestChangeUserPassword(t *testing.T) {
 	}
 
 	var resp responses.Success
-	apitest.POST(t, apitest.Request{
+	POST(t, Request{
 		Path:         "change-password",
 		Body:         req,
 		AssertStatus: http.StatusOK,
@@ -201,7 +226,7 @@ func TestChangeUserPassword(t *testing.T) {
 	}
 
 	var resp2 responses.Login
-	apitest.POST(t, apitest.Request{
+	POST(t, Request{
 		Path:         "login",
 		Body:         req2,
 		AssertStatus: http.StatusOK,
@@ -209,7 +234,7 @@ func TestChangeUserPassword(t *testing.T) {
 		IsPublic:     true,
 	})
 
-	assert.Equals(t, apitest.AuthUser.ID, elem.ID)
+	assert.Equals(t, AuthUser.ID, elem.ID)
 }
 
 func TestPasswordReset(t *testing.T) {
@@ -222,7 +247,7 @@ func TestPasswordReset(t *testing.T) {
 
 	// password reset start
 	var resp responses.Success
-	apitest.POST(t, apitest.Request{
+	POST(t, Request{
 		Path:         "reset-password",
 		Body:         req,
 		AssertStatus: http.StatusOK,
@@ -235,7 +260,7 @@ func TestPasswordReset(t *testing.T) {
 
 	// check token
 	var resp2 string
-	apitest.POST(t, apitest.Request{
+	POST(t, Request{
 		Path:         "reset-password/" + token.Token,
 		AssertStatus: http.StatusOK,
 		BindResponse: &resp2,
@@ -247,7 +272,7 @@ func TestPasswordReset(t *testing.T) {
 		Password: utils.RandomString(10),
 	}
 	var resp3 responses.Success
-	apitest.PUT(t, apitest.Request{
+	PUT(t, Request{
 		Path:         "reset-password",
 		Body:         req3,
 		AssertStatus: http.StatusOK,
@@ -260,7 +285,7 @@ func TestPasswordReset(t *testing.T) {
 		Password: req3.Password,
 	}
 	var resp4 responses.Login
-	apitest.POST(t, apitest.Request{
+	POST(t, Request{
 		Path:         "login",
 		Body:         req4,
 		AssertStatus: http.StatusOK,

@@ -10,7 +10,7 @@ import (
 	"github.com/vovainside/vobook/config"
 	"github.com/vovainside/vobook/database"
 	"github.com/vovainside/vobook/database/factories"
-	"github.com/vovainside/vobook/tests/apitest"
+	. "github.com/vovainside/vobook/tests/apitest"
 	"github.com/vovainside/vobook/tests/assert"
 	"github.com/vovainside/vobook/utils"
 )
@@ -24,7 +24,7 @@ func TestVerifyExistingEmail(t *testing.T) {
 	assert.NotError(t, err)
 
 	var resp responses.Success
-	apitest.GET(t, apitest.Request{
+	GET(t, Request{
 		Path:         "verify-email/" + ev.Token,
 		AssertStatus: http.StatusOK,
 		BindResponse: &resp,
@@ -45,7 +45,7 @@ func TestVerifyNewEmail(t *testing.T) {
 	assert.NotError(t, err)
 
 	var resp responses.Success
-	apitest.GET(t, apitest.Request{
+	GET(t, Request{
 		Path:         "verify-email/" + ev.Token,
 		AssertStatus: http.StatusOK,
 		BindResponse: &resp,
@@ -71,7 +71,7 @@ func TestVerifyNEmail_ShouldBeExpired(t *testing.T) {
 	assert.NotError(t, err)
 
 	var resp responses.Error
-	apitest.GET(t, apitest.Request{
+	GET(t, Request{
 		Path:         "verify-email/" + ev.Token,
 		AssertStatus: http.StatusUnprocessableEntity,
 		BindResponse: &resp,
