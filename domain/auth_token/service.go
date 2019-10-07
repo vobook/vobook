@@ -51,3 +51,12 @@ func Sign(elem *models.AuthToken) string {
 	sig := fmt.Sprintf("%x", sha256.Sum256([]byte(strings.Join(sigData, "+"))))
 	return elem.Token + sig
 }
+
+func DeleteByUser(id string) (err error) {
+	_, err = database.ORM().
+		Model(&models.AuthToken{}).
+		Where("user_id = ?", id).
+		Delete()
+
+	return
+}

@@ -197,6 +197,41 @@ func UpdateAuthUser(c *gin.Context) {
 	c.JSON(http.StatusOK, responses.OK("Saved"))
 }
 
+func DeleteAuthUser(c *gin.Context) {
+	var req requests.DeleteUser
+	if !bindJSON(c, &req) {
+		return
+	}
+
+	userEl := authUser(c)
+
+	err := bcrypt.CompareHashAndPassword([]byte(userEl.Password), []byte(req.Password))
+	if err != nil {
+		abort422(c, errors.WrongEmailOrPassword)
+		return
+	}
+
+	err = user.Delete(userEl.ID)
+	if err != nil {
+		Abort(c, err)
+		return
+	}
+
+	err = authtoken.DeleteByUser(userEl.ID)
+	if err != nil {
+		Abort(c, err)
+		return
+	}
+
+	err = mail.SendTemplate(userEl.Email, "user-account-deleted", nil)
+	if err != nil {
+		Abort(c, err)
+		return
+	}
+
+	c.JSON(http.StatusOK, responses.OK("Your account deleted"))
+}
+
 func ResetPasswordStart(c *gin.Context) {
 	var req requests.ResetPasswordStart
 	if !bindJSON(c, &req) {

@@ -132,6 +132,21 @@ func (r *ResetPasswordStart) Validate() (err error) {
 	return
 }
 
+type DeleteUser struct {
+	Password string `json:"password"`
+}
+
+func (r *DeleteUser) Validate() (err error) {
+	err = validation.ValidateStruct(r,
+		validation.Field(
+			&r.Password,
+			validation.Required,
+		),
+	)
+
+	return
+}
+
 type UpdateUser struct {
 	FirstName *string `json:"first_name"`
 	LastName  *string `json:"last_name"`

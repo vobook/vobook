@@ -13,6 +13,7 @@ type User struct {
 	EmailVerified bool      `json:"email_verified"`
 	Password      string    `json:"-"`
 	CreatedAt     time.Time `json:"created_at"`
+	DeletedAt     time.Time `json:"deleted_at"`
 }
 
 func (m *User) BeforeInsert(ctx context.Context) (context.Context, error) {

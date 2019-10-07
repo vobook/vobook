@@ -103,6 +103,11 @@ func replacePlaceholders(data []byte, replace Replace) []byte {
 		"app-name": config.Get().App.Name,
 	}
 
+	if replace == nil {
+		replace = globals
+		goto replace
+	}
+
 	for k, v := range globals {
 		_, ok := replace[k]
 		if !ok {
@@ -110,6 +115,7 @@ func replacePlaceholders(data []byte, replace Replace) []byte {
 		}
 	}
 
+replace:
 	for k, v := range replace {
 		data = bytes.ReplaceAll(data, []byte("{"+k+"}"), []byte(v))
 	}

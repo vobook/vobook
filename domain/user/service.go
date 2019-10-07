@@ -1,6 +1,8 @@
 package user
 
 import (
+	"time"
+
 	"github.com/go-pg/pg"
 	"github.com/vovainside/vobook/cmd/server/errors"
 	"github.com/vovainside/vobook/database"
@@ -41,6 +43,26 @@ func UpdatePassword(id, password string) (err error) {
 		Model(&models.User{}).
 		Where("id = ?", id).
 		Set("password = ?", password).
+		Update()
+
+	return
+}
+
+func Delete(id string) (err error) {
+	_, err = database.ORM().
+		Model(&models.User{}).
+		Where("id = ?", id).
+		Set("deleted_at = ?", time.Now()).
+		Update()
+
+	return
+}
+
+func Restore(id string) (err error) {
+	_, err = database.ORM().
+		Model(&models.User{}).
+		Where("id = ?", id).
+		Set("deleted_at = null").
 		Update()
 
 	return

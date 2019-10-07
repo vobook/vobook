@@ -125,6 +125,44 @@ func TestChangeEmail(t *testing.T) {
 	assert.True(t, sentMail.Body != "")
 }
 
+func TestDeleteAccount(t *testing.T) {
+	ReLogin(t)
+	elem := User(t)
+	password := elem.Password
+	passwordHash, err := utils.HashPassword(password)
+	assert.NotError(t, err)
+
+	err = user.UpdatePassword(elem.ID, passwordHash)
+	assert.NotError(t, err)
+
+	req := requests.DeleteUser{
+		Password: password,
+	}
+
+	var resp responses.Success
+	PUT(t, Request{
+		Path:         "user/delete",
+		Body:         req,
+		AssertStatus: http.StatusOK,
+		BindResponse: &resp,
+	})
+
+	assert.DatabaseMissing(t, "auth_tokens", utils.M{
+		"user_id": AuthUser.ID,
+	})
+
+	assert.DatabaseHas(t, "users", utils.M{
+		"id":         AuthUser.ID,
+		"deleted_at": assert.IsNotNull(),
+	})
+
+	sentMail := mail.TestRepo.GetMail(AuthUser.Email)
+	assert.Equals(t, config.Get().Mail.From, sentMail.From)
+	assert.Equals(t, []string{AuthUser.Email}, sentMail.To)
+	assert.True(t, sentMail.Subject != "")
+	assert.True(t, sentMail.Body != "")
+}
+
 func TestRegisterUser_UserAlreadyExists(t *testing.T) {
 	userEl, err := factories.CreateUser()
 	assert.NotError(t, err)

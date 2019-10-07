@@ -13,7 +13,8 @@ create table users (
     email text unique not null,
 	email_verified bool default false,
     password text not null,
-    created_at timestamptz not null
+    created_at timestamptz not null,
+    deleted_at timestamptz 
 );
 
 create table email_verifications (

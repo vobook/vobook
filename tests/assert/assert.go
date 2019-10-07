@@ -12,6 +12,12 @@ import (
 	"github.com/vovainside/vobook/utils"
 )
 
+type NotNull bool
+
+func IsNotNull() NotNull {
+	return true
+}
+
 func DatabaseCount(t *testing.T, table string, data utils.M) int {
 	args := []interface{}{}
 	wheres := []string{}
@@ -21,6 +27,11 @@ func DatabaseCount(t *testing.T, table string, data utils.M) int {
 	for col, val := range data {
 		if val == nil {
 			wheres = append(wheres, fmt.Sprintf("%s IS NULL", col))
+			continue
+		}
+		switch val.(type) {
+		case NotNull:
+			wheres = append(wheres, fmt.Sprintf("%s IS NOT NULL", col))
 			continue
 		}
 		args = append(args, val)
