@@ -10,7 +10,7 @@ func CreateMany(elems []*models.ContactProperty) (err error) {
 		return
 	}
 	_, err = database.ORM().
-		Model(elems).
+		Model(&elems).
 		Insert()
 
 	return

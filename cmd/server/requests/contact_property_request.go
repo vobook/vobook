@@ -2,7 +2,7 @@ package requests
 
 import (
 	"github.com/vovainside/vobook/database/models"
-	contactproperty "github.com/vovainside/vobook/enum/contact_property"
+	"github.com/vovainside/vobook/enum/contact_property"
 )
 
 type CreateContactProperty struct {

@@ -5,6 +5,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/vovainside/vobook/cmd/server/requests"
+	"github.com/vovainside/vobook/cmd/server/responses"
 	"github.com/vovainside/vobook/domain/contact"
 )
 
@@ -22,5 +23,5 @@ func CreateContact(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, elem)
+	c.JSON(http.StatusCreated, responses.OK("New contact created"))
 }

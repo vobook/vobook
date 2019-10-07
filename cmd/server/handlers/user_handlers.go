@@ -6,18 +6,19 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
+	"golang.org/x/crypto/bcrypt"
+
 	"github.com/vovainside/vobook/cmd/server/errors"
 	"github.com/vovainside/vobook/cmd/server/requests"
 	"github.com/vovainside/vobook/cmd/server/responses"
 	"github.com/vovainside/vobook/config"
 	"github.com/vovainside/vobook/database/models"
-	authtoken "github.com/vovainside/vobook/domain/auth_token"
-	emailverification "github.com/vovainside/vobook/domain/email_verification"
-	passwordreset "github.com/vovainside/vobook/domain/password_reset"
+	"github.com/vovainside/vobook/domain/auth_token"
+	"github.com/vovainside/vobook/domain/email_verification"
+	"github.com/vovainside/vobook/domain/password_reset"
 	"github.com/vovainside/vobook/domain/user"
 	"github.com/vovainside/vobook/services/mail"
 	"github.com/vovainside/vobook/utils"
-	"golang.org/x/crypto/bcrypt"
 )
 
 func RegisterUser(c *gin.Context) {

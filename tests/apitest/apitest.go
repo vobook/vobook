@@ -11,17 +11,17 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/vovainside/vobook/services/mail"
-
 	"github.com/gin-gonic/gin"
 	"github.com/go-pg/pg/orm"
+
 	"github.com/vovainside/vobook/cmd/server/routes"
 	"github.com/vovainside/vobook/config"
 	"github.com/vovainside/vobook/database"
 	"github.com/vovainside/vobook/database/factories"
 	"github.com/vovainside/vobook/database/models"
-	authtoken "github.com/vovainside/vobook/domain/auth_token"
+	"github.com/vovainside/vobook/domain/auth_token"
 	"github.com/vovainside/vobook/logger"
+	"github.com/vovainside/vobook/services/mail"
 	"github.com/vovainside/vobook/tests/assert"
 	"github.com/vovainside/vobook/utils"
 )
@@ -218,8 +218,8 @@ func GET(t *testing.T, req Request) *httptest.ResponseRecorder {
 	return TestRequest(t, req)
 }
 
-// Create makes "create" request
-func Create(t *testing.T, path string, body, response interface{}) *httptest.ResponseRecorder {
+// Create makes "create" POST request that expects response type of response arg and 201 status code
+func TestCreate(t *testing.T, path string, body, response interface{}) *httptest.ResponseRecorder {
 	req := Request{
 		Path:         path,
 		Body:         body,

@@ -4,7 +4,7 @@ import (
 	"context"
 	"time"
 
-	contactproperty "github.com/vovainside/vobook/enum/contact_property"
+	"github.com/vovainside/vobook/enum/contact_property"
 )
 
 type ContactProperty struct {
