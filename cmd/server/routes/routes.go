@@ -26,5 +26,14 @@ func Register(r *gin.Engine) {
 		middlewares.TokenAuth,
 	)
 
-	userRoutes(api)
+	apply(api,
+		userRoutes,
+		contactRoutes,
+	)
+}
+
+func apply(rg *gin.RouterGroup, routesFn ...func(*gin.RouterGroup)) {
+	for _, fn := range routesFn {
+		fn(rg)
+	}
 }

@@ -1,0 +1,5 @@
+subject: "{app-name}: Account deleted"
+body: >
+  <p>Your account marked as deleted, however all your data is not deleted yet.</p>
+  <p>To restore your account or delete all your data simply login again.</a>
+  <p>If you'll not make any action all your data will be automatically deleted after one month from now.</a>
