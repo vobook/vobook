@@ -60,6 +60,10 @@ type Config struct {
 
 	ApiBasePath   string `yaml:"api_base_path"`
 	WebClientAddr string `yaml:"web_client_addr"`
+
+	DateFormat     string `yaml:"date_format"`
+	TimeFormat     string `yaml:"time_format"`
+	DateTimeFormat string `yaml:"date_time_format"`
 }
 
 var conf *Config
@@ -90,6 +94,16 @@ func Get() *Config {
 		if conf.Server.Port != "" {
 			conf.WebClientAddr += ":" + conf.Server.Port
 		}
+	}
+
+	if conf.DateFormat == "" {
+		conf.DateFormat = "2006-01-02"
+	}
+	if conf.TimeFormat == "" {
+		conf.TimeFormat = "15:04:05"
+	}
+	if conf.DateTimeFormat == "" {
+		conf.DateTimeFormat = conf.DateFormat + " " + conf.DateTimeFormat
 	}
 
 	return conf

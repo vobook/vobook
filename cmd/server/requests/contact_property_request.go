@@ -24,3 +24,21 @@ func (r *CreateContactProperty) ToModel() *models.ContactProperty {
 		Order: r.Order,
 	}
 }
+
+type UpdateContactProperty struct {
+	Name  *string `json:"name"`
+	Value *string `json:"value"`
+}
+
+func (r *UpdateContactProperty) Validate() (err error) {
+	return
+}
+
+func (r *UpdateContactProperty) ToModel(m *models.ContactProperty) {
+	if r.Name != nil {
+		m.Name = *r.Name
+	}
+	if r.Value != nil {
+		m.Value = *r.Value
+	}
+}

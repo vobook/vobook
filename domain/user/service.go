@@ -4,6 +4,7 @@ import (
 	"time"
 
 	"github.com/go-pg/pg"
+
 	"github.com/vovainside/vobook/cmd/server/errors"
 	"github.com/vovainside/vobook/database"
 	"github.com/vovainside/vobook/database/models"
@@ -20,7 +21,7 @@ func Create(elem *models.User) (err error) {
 func FindByEmail(email string) (elem models.User, err error) {
 	err = database.ORM().
 		Model(&elem).
-		Where("email=?", email).
+		Where("email = ?", email).
 		First()
 	if err == pg.ErrNoRows {
 		err = errors.UserByEmailNotFound
@@ -32,7 +33,7 @@ func FindByEmail(email string) (elem models.User, err error) {
 func FindByID(id string) (elem models.User, err error) {
 	err = database.ORM().
 		Model(&elem).
-		Where("id=?", id).
+		Where("id = ?", id).
 		First()
 
 	return

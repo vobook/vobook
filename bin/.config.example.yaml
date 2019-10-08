@@ -36,3 +36,7 @@ password_reset_lifetime: 30m
 
 api_base_path: api
 web_client_addr:
+
+date_format: '2006-01-02'
+time_format: '15:04:05'
+date_time_format: '2006-01-02 15:04:05'

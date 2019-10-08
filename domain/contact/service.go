@@ -18,6 +18,6 @@ func Create(m *models.Contact) (err error) {
 		m.Properties[i].ContactID = m.ID
 	}
 
-	err = contactproperty.CreateMany(m.Properties)
+	err = contactproperty.CreateMany(&m.Properties)
 	return
 }

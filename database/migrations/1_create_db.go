@@ -65,10 +65,10 @@ create table contact_properties
 (
     id         uuid primary key not null default gen_random_uuid(),
     contact_id uuid             not null references contacts (id),
-    name       text,
-    type       int,
-    value      text,
-    "order"    int,
+    name       text not null,
+    type       int not null,
+    value      text not null,
+    "order"    int not null,
     created_at timestamptz      not null,
     deleted_at timestamptz
 );

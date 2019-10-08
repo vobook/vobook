@@ -31,6 +31,7 @@ var (
 	AuthUser  *models.User
 	authToken string
 	router    *gin.Engine
+	Conf      *config.Config
 )
 
 type Headers map[string]string
@@ -50,12 +51,12 @@ func init() {
 	// changing working dir to vobook/bin
 	// just want to use main .config.yaml, thats why
 	_ = os.Chdir("../../../bin")
-	conf := config.Get()
+	Conf = config.Get()
 
 	// override config
-	conf.LogsFilePath = "tests.log"
-	conf.Mail.Driver = mail.TestDriverName
-	conf.App.Env = config.TestEnv
+	Conf.LogsFilePath = "tests.log"
+	Conf.Mail.Driver = mail.TestDriverName
+	Conf.App.Env = config.TestEnv
 
 	logger.Setup()
 
