@@ -9,6 +9,6 @@ import (
 func contactPropertyRoutes(r *gin.RouterGroup) {
 	contacts := r.Group("contact-properties")
 	{
-		contacts.PUT("/:id", handlers.UpdateContactProperty)
+		contacts.PUT("/:id/", handlers.UpdateContactProperty)
 	}
 }

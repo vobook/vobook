@@ -23,6 +23,8 @@ func UpdateContactProperty(c *gin.Context) {
 		return
 	}
 
+	req.ToModel(&elem)
+
 	err = contactproperty.Update(&elem)
 	if err != nil {
 		Abort(c, err)

@@ -1,6 +1,11 @@
 package contactproperty
 
-import "fmt"
+import (
+	"fmt"
+	"math/rand"
+
+	"github.com/vovainside/vobook/cmd/server/errors"
+)
 
 type Type int
 
@@ -51,4 +56,36 @@ func (t Type) Name() string {
 	}
 
 	panic(fmt.Sprintf("unknown contact property type %d", t))
+}
+
+func (t Type) Validate() (err error) {
+	for _, v := range Types {
+		if v == t {
+			return nil
+		}
+	}
+
+	return errors.InvalidContactPropertyType
+}
+
+var Types = []Type{
+	TypeOther,
+	TypePersonalPhone,
+	TypeWorkPhone,
+	TypePersonalEmail,
+	TypeWorkEmail,
+	TypePhone,
+	TypeEmail,
+	TypeAddress,
+	TypeFacebook,
+	TypeTwitter,
+	TypeGithub,
+	TypeWhatsApp,
+	TypeTelegram,
+	TypeLink,
+	TypeNote,
+}
+
+func RandomType() Type {
+	return Types[rand.Intn(len(Types)-1)]
 }

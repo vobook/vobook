@@ -4,6 +4,7 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+
 	"github.com/vovainside/vobook/cmd/server/middlewares"
 	"github.com/vovainside/vobook/config"
 )
@@ -29,6 +30,7 @@ func Register(r *gin.Engine) {
 	apply(api,
 		userRoutes,
 		contactRoutes,
+		contactPropertyRoutes,
 	)
 }
 

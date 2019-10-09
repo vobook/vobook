@@ -4,15 +4,14 @@ import (
 	"testing"
 	"time"
 
-	"github.com/vovainside/vobook/database/models"
-	"github.com/vovainside/vobook/tests/assert"
-	"github.com/vovainside/vobook/utils"
-
 	fake "github.com/brianvoe/gofakeit"
 
 	"github.com/vovainside/vobook/cmd/server/requests"
+	"github.com/vovainside/vobook/database/models"
 	"github.com/vovainside/vobook/enum/contact_property"
 	. "github.com/vovainside/vobook/tests/apitest"
+	"github.com/vovainside/vobook/tests/assert"
+	"github.com/vovainside/vobook/utils"
 )
 
 func TestCreateContact(t *testing.T) {

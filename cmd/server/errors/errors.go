@@ -21,6 +21,7 @@ var (
 	UserByEmailNotFound        = New404("User with this email not exists")
 	PasswordResetTokenNotFound = New404("Invalid password reset request")
 	PasswordResetTokenExpired  = New404("Password reset request expired")
+	InvalidContactPropertyType = New422("Invalid contact property type")
 )
 
 func New400(message string) error {

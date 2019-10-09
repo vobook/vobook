@@ -232,7 +232,7 @@ func TestCreate(t *testing.T, path string, body, response interface{}) *httptest
 }
 
 // Update makes "update" request
-func Update(t *testing.T, path string, body, response interface{}) *httptest.ResponseRecorder {
+func TestUpdate(t *testing.T, path string, body, response interface{}) *httptest.ResponseRecorder {
 	req := Request{
 		Path:         path,
 		Body:         body,

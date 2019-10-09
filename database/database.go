@@ -6,6 +6,7 @@ import (
 	"github.com/go-pg/pg"
 	"github.com/go-pg/pg/orm"
 	_ "github.com/lib/pq"
+
 	"github.com/vovainside/vobook/config"
 )
 
@@ -46,7 +47,7 @@ func (d dbLogger) AfterQuery(c context.Context, q *pg.QueryEvent) (err error) {
 	if err != nil {
 		return
 	}
-	println(query)
+	println(query + "\n")
 	return nil
 }
 

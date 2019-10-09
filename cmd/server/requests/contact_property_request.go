@@ -13,6 +13,7 @@ type CreateContactProperty struct {
 }
 
 func (r *CreateContactProperty) Validate() (err error) {
+	err = r.Type.Validate()
 	return
 }
 
