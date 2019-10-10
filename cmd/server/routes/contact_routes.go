@@ -2,12 +2,21 @@ package routes
 
 import (
 	"github.com/gin-gonic/gin"
+
 	"github.com/vovainside/vobook/cmd/server/handlers"
+	"github.com/vovainside/vobook/cmd/server/middlewares"
 )
 
 func contactRoutes(r *gin.RouterGroup) {
-	contacts := r.Group("contacts")
+	all := r.Group("contacts")
 	{
-		contacts.POST("/", handlers.CreateContact)
+		all.POST("/", handlers.CreateContact)
+
+		one := all.Group(":id")
+		one.Use(middlewares.ContactMiddleware)
+		{
+			one.PUT("/", handlers.UpdateContact)
+		}
+
 	}
 }

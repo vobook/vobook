@@ -7,6 +7,8 @@ import (
 	fake "github.com/brianvoe/gofakeit"
 
 	"github.com/vovainside/vobook/cmd/server/requests"
+	"github.com/vovainside/vobook/cmd/server/responses"
+	"github.com/vovainside/vobook/database/factories"
 	"github.com/vovainside/vobook/database/models"
 	"github.com/vovainside/vobook/enum/contact_property"
 	. "github.com/vovainside/vobook/tests/apitest"
@@ -78,4 +80,33 @@ func TestCreateContact(t *testing.T) {
 			"type":       v.Type,
 		})
 	}
+}
+
+func TestUpdateContact(t *testing.T) {
+	elem, err := factories.CreateContact()
+	assert.NotError(t, err)
+
+	name := fake.Name()
+	firstName := fake.FirstName()
+	lastName := fake.LastName()
+	middleName := fake.LastName()
+	bday := fake.DateRange(time.Now().AddDate(-100, 0, 0), time.Now())
+	req := requests.UpdateContact{
+		Name:       &name,
+		FirstName:  &firstName,
+		LastName:   &lastName,
+		MiddleName: &middleName,
+		Birthday:   &bday,
+	}
+
+	var resp responses.Success
+	TestUpdate(t, "contacts/"+elem.ID, req, &resp)
+
+	assert.DatabaseHas(t, "contacts", utils.M{
+		"id":          elem.ID,
+		"name":        name,
+		"first_name":  firstName,
+		"last_name":   lastName,
+		"middle_name": middleName,
+	})
 }

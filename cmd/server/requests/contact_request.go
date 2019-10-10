@@ -41,3 +41,33 @@ func (r *CreateContact) ToModel() *models.Contact {
 
 	return m
 }
+
+type UpdateContact struct {
+	Name       *string    `json:"name"`
+	FirstName  *string    `json:"first_name"`
+	LastName   *string    `json:"last_name"`
+	MiddleName *string    `json:"middle_name"`
+	Birthday   *time.Time `json:"birthday"`
+}
+
+func (r *UpdateContact) Validate() (err error) {
+	return
+}
+
+func (r *UpdateContact) ToModel(m *models.Contact) {
+	if r.Name != nil {
+		m.Name = *r.Name
+	}
+	if r.FirstName != nil {
+		m.FirstName = *r.FirstName
+	}
+	if r.LastName != nil {
+		m.LastName = *r.LastName
+	}
+	if r.MiddleName != nil {
+		m.MiddleName = *r.MiddleName
+	}
+	if r.Birthday != nil {
+		m.Birthday = *r.Birthday
+	}
+}

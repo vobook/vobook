@@ -21,3 +21,19 @@ func Create(m *models.Contact) (err error) {
 	err = contactproperty.CreateMany(&m.Properties)
 	return
 }
+
+func Find(id string) (m models.Contact, err error) {
+	err = database.ORM().
+		Model(&m).
+		Where("id = ?", id).
+		First()
+
+	return
+}
+
+func Update(m *models.Contact) (err error) {
+	err = database.ORM().
+		Update(m)
+
+	return
+}
