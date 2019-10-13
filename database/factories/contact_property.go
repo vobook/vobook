@@ -29,7 +29,7 @@ func MakeContactProperty(mOpt ...models.ContactProperty) (m models.ContactProper
 		m.Name = fake.Name()
 	}
 	if m.Value == "" {
-		m.Name = fake.Company()
+		m.Value = fake.Company()
 	}
 
 	return

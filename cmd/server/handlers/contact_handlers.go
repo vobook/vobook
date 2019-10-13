@@ -28,23 +28,6 @@ func CreateContact(c *gin.Context) {
 	c.JSON(http.StatusCreated, elem)
 }
 
-func ContactMiddleware(c *gin.Context) {
-	var req requests.CreateContact
-	if !bindJSON(c, &req) {
-		return
-	}
-
-	elem := req.ToModel()
-	elem.UserID = authUser(c).ID
-	err := contact.Create(elem)
-	if err != nil {
-		Abort(c, err)
-		return
-	}
-
-	c.JSON(http.StatusCreated, elem)
-}
-
 func UpdateContact(c *gin.Context) {
 	var req requests.UpdateContact
 	if !bindJSON(c, &req) {
@@ -60,6 +43,18 @@ func UpdateContact(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, responses.OK("Saved"))
+}
+
+func GetContact(c *gin.Context) {
+	elem := getContactFromRequest(c)
+	props, err := contact.Props(elem.ID)
+	if err != nil {
+		Abort(c, err)
+		return
+	}
+
+	elem.Props = props
+	c.JSON(http.StatusOK, elem)
 }
 
 func getContactFromRequest(c *gin.Context) models.Contact {

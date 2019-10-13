@@ -219,7 +219,7 @@ func GET(t *testing.T, req Request) *httptest.ResponseRecorder {
 	return TestRequest(t, req)
 }
 
-// Create makes "create" POST request that expects response type of response arg and 201 status code
+// TestCreate makes "create" POST request that expects response type of response arg and 201 status code
 func TestCreate(t *testing.T, path string, body, response interface{}) *httptest.ResponseRecorder {
 	req := Request{
 		Path:         path,
@@ -231,7 +231,7 @@ func TestCreate(t *testing.T, path string, body, response interface{}) *httptest
 	return POST(t, req)
 }
 
-// Update makes "update" request
+// TestUpdate makes "update" request
 func TestUpdate(t *testing.T, path string, body, response interface{}) *httptest.ResponseRecorder {
 	req := Request{
 		Path:         path,
@@ -266,8 +266,8 @@ func Delete(t *testing.T, path string, response interface{}) *httptest.ResponseR
 	return DELETE(t, req)
 }
 
-// View makes "get" request for a single entity
-func View(t *testing.T, path string, response interface{}) *httptest.ResponseRecorder {
+// TestGetByID makes "get" request for a single entity
+func TestGetByID(t *testing.T, path string, response interface{}) *httptest.ResponseRecorder {
 	req := Request{
 		Path:         path,
 		BindResponse: response,

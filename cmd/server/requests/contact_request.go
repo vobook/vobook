@@ -34,9 +34,10 @@ func (r *CreateContact) ToModel() *models.Contact {
 		Birthday:   r.Birthday,
 	}
 
-	m.Properties = make([]*models.ContactProperty, len(r.Properties))
+	m.Props = make([]models.ContactProperty, len(r.Properties))
 	for i, v := range r.Properties {
-		m.Properties[i] = v.ToModel()
+		m.Props[i] = v.ToModel()
+		m.Props[i].Order = i + 1
 	}
 
 	return m

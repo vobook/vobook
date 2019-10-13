@@ -1,10 +1,12 @@
 package tests
 
 import (
+	"fmt"
 	"testing"
 	"time"
 
 	fake "github.com/brianvoe/gofakeit"
+	"github.com/davecgh/go-spew/spew"
 
 	"github.com/vovainside/vobook/cmd/server/requests"
 	"github.com/vovainside/vobook/cmd/server/responses"
@@ -56,13 +58,13 @@ func TestCreateContact(t *testing.T) {
 	assert.Equals(t, req.FirstName, resp.FirstName)
 	assert.Equals(t, req.LastName, resp.LastName)
 	assert.Equals(t, req.Birthday.Format(Conf.DateFormat), resp.Birthday.Format(Conf.DateFormat))
-	assert.Equals(t, len(req.Properties), len(resp.Properties))
+	assert.Equals(t, len(req.Properties), len(resp.Props))
 
 	for i, v := range req.Properties {
-		assert.Equals(t, resp.ID, resp.Properties[i].ContactID)
-		assert.Equals(t, v.Name, resp.Properties[i].Name)
-		assert.Equals(t, v.Value, resp.Properties[i].Value)
-		assert.Equals(t, v.Type, resp.Properties[i].Type)
+		assert.Equals(t, resp.ID, resp.Props[i].ContactID)
+		assert.Equals(t, v.Name, resp.Props[i].Name)
+		assert.Equals(t, v.Value, resp.Props[i].Value)
+		assert.Equals(t, v.Type, resp.Props[i].Type)
 	}
 
 	assert.DatabaseHas(t, "contacts", utils.M{
@@ -109,4 +111,40 @@ func TestUpdateContact(t *testing.T) {
 		"last_name":   lastName,
 		"middle_name": middleName,
 	})
+}
+
+func TestGetContact(t *testing.T) {
+	elem, err := factories.CreateContact()
+	assert.NotError(t, err)
+
+	props := make([]models.ContactProperty, 3)
+	for i := range props {
+		prop, err := factories.CreateContactProperty(models.ContactProperty{
+			ContactID: elem.ID,
+			Name:      fmt.Sprintf("Prop %d", i+1),
+			Order:     i + 1,
+		})
+		assert.NotError(t, err)
+		props[i] = prop
+	}
+
+	var resp models.Contact
+	TestGetByID(t, "contacts/"+elem.ID, &resp)
+
+	assert.Equals(t, elem.ID, resp.ID)
+	assert.Equals(t, elem.FirstName, resp.FirstName)
+	assert.Equals(t, elem.LastName, resp.LastName)
+	assert.Equals(t, 3, len(resp.Props))
+
+	spew.Dump(resp)
+
+	for i, v := range props {
+		assert.Equals(t, v.ID, resp.Props[i].ID)
+		assert.Equals(t, v.Type, resp.Props[i].Type)
+		assert.Equals(t, v.Name, resp.Props[i].Name)
+		assert.Equals(t, v.Value, resp.Props[i].Value)
+		assert.Equals(t, v.Order, resp.Props[i].Order)
+	}
+
+	//spew.Dump(resp)
 }

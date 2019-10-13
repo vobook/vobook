@@ -16,6 +16,7 @@ func contactRoutes(r *gin.RouterGroup) {
 		one.Use(middlewares.ContactMiddleware)
 		{
 			one.PUT("/", handlers.UpdateContact)
+			one.GET("/", handlers.GetContact)
 		}
 
 	}
