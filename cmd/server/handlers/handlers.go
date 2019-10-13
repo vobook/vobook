@@ -7,6 +7,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/go-pg/pg"
+
 	"github.com/vovainside/vobook/cmd/server/errors"
 	"github.com/vovainside/vobook/cmd/server/responses"
 )
@@ -48,6 +49,22 @@ func Abort(c *gin.Context, err error) {
 
 func bindJSON(c *gin.Context, req Validatable) (ok bool) {
 	err := c.ShouldBindJSON(req)
+	if err != nil {
+		abort400(c, err)
+		return
+	}
+
+	err = req.Validate()
+	if err != nil {
+		abort422(c, err)
+		return
+	}
+
+	return true
+}
+
+func bindQuery(c *gin.Context, req Validatable) (ok bool) {
+	err := c.ShouldBindQuery(req)
 	if err != nil {
 		abort400(c, err)
 		return

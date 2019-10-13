@@ -28,6 +28,26 @@ func CreateContact(c *gin.Context) {
 	c.JSON(http.StatusCreated, elem)
 }
 
+func SearchContact(c *gin.Context) {
+	var req requests.SearchContact
+	if !bindQuery(c, &req) {
+		return
+	}
+
+	data, count, err := contact.Search(authUser(c).ID, elem)
+	if err != nil {
+		Abort(c, err)
+		return
+	}
+
+	resp := responses.SearchContact{
+		Data:  data,
+		Count: count,
+	}
+
+	c.JSON(http.StatusCreated, resp)
+}
+
 func UpdateContact(c *gin.Context) {
 	var req requests.UpdateContact
 	if !bindJSON(c, &req) {

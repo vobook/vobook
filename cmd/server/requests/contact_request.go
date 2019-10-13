@@ -72,3 +72,14 @@ func (r *UpdateContact) ToModel(m *models.Contact) {
 		m.Birthday = *r.Birthday
 	}
 }
+
+type SearchContact struct {
+	Page    int    `form:"page"`
+	Limit   int    `form:"per_page"`
+	Query   string `form:"query"` // search anything
+	Trashed bool   `form:"trashed"`
+}
+
+func (r *SearchContact) Validate() (err error) {
+	return
+}

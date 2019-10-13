@@ -11,6 +11,7 @@ func contactRoutes(r *gin.RouterGroup) {
 	all := r.Group("contacts")
 	{
 		all.POST("/", handlers.CreateContact)
+		all.GET("/", handlers.SearchContact)
 
 		one := all.Group(":id")
 		one.Use(middlewares.ContactMiddleware)
