@@ -74,10 +74,10 @@ func (r *UpdateContact) ToModel(m *models.Contact) {
 }
 
 type SearchContact struct {
-	Page    int    `form:"page"`
-	Limit   int    `form:"per_page"`
-	Query   string `form:"query"` // search anything
-	Trashed bool   `form:"trashed"`
+	Page    int    `json:"page" form:"page"`
+	Limit   int    `json:"limit" form:"per_page"`
+	Query   string `json:"query" form:"query"` // search anything
+	Trashed bool   `json:"trashed" form:"trashed"`
 }
 
 func (r *SearchContact) Validate() (err error) {

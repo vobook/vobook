@@ -9,25 +9,37 @@ import (
 	"github.com/vovainside/vobook/database/models"
 )
 
-func MakeContact() (m models.Contact, err error) {
-	userEl, err := CreateUser()
-	if err != nil {
-		return
+func MakeContact(mOpt ...models.Contact) (m models.Contact, err error) {
+	if len(mOpt) == 1 {
+		m = mOpt[0]
 	}
 
-	m = models.Contact{
-		UserID:     userEl.ID,
-		FirstName:  fake.FirstName(),
-		LastName:   fake.LastName(),
-		MiddleName: fake.LastName(),
-		Birthday:   fake.DateRange(time.Now().AddDate(-100, 0, 0), time.Now()),
+	if m.UserID == "" {
+		var userEl models.User
+		userEl, err = CreateUser()
+		if err != nil {
+			return
+		}
+		m.UserID = userEl.ID
+	}
+	if m.FirstName == "" {
+		m.FirstName = fake.FirstName()
+	}
+	if m.LastName == "" {
+		m.LastName = fake.LastName()
+	}
+	if m.MiddleName == "" {
+		m.MiddleName = fake.LastName()
+	}
+	if m.Birthday.IsZero() {
+		m.Birthday = fake.DateRange(time.Now().AddDate(-100, 0, 0), time.Now())
 	}
 
 	return
 }
 
-func CreateContact() (m models.Contact, err error) {
-	m, err = MakeContact()
+func CreateContact(mOpt ...models.Contact) (m models.Contact, err error) {
+	m, err = MakeContact(mOpt...)
 	if err != nil {
 		return
 	}

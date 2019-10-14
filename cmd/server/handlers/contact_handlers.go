@@ -34,7 +34,7 @@ func SearchContact(c *gin.Context) {
 		return
 	}
 
-	data, count, err := contact.Search(authUser(c).ID, elem)
+	data, count, err := contact.Search(authUser(c).ID, req)
 	if err != nil {
 		Abort(c, err)
 		return
@@ -45,7 +45,7 @@ func SearchContact(c *gin.Context) {
 		Count: count,
 	}
 
-	c.JSON(http.StatusCreated, resp)
+	c.JSON(http.StatusOK, resp)
 }
 
 func UpdateContact(c *gin.Context) {

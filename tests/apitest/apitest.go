@@ -117,7 +117,7 @@ func TestRequest(t *testing.T, req Request) *httptest.ResponseRecorder {
 		req.Path = path.Join(p, req.Path)
 	}
 
-	if !strings.HasSuffix(req.Path, "/") {
+	if !strings.HasSuffix(req.Path, "/") && !strings.Contains(req.Path, "/?") {
 		req.Path += "/"
 	}
 
@@ -277,14 +277,14 @@ func TestGetByID(t *testing.T, path string, response interface{}) *httptest.Resp
 	return GET(t, req)
 }
 
-// Search makes "get" request with query params
-func Search(t *testing.T, path string, request, response interface{}) *httptest.ResponseRecorder {
+// TestSearch makes "get" request with query params
+func TestSearch(t *testing.T, path string, request, response interface{}) *httptest.ResponseRecorder {
 	query, err := utils.StructToQueryString(request)
 	if err != nil {
 		t.Fatal(err.Error())
 	}
 
-	path = fmt.Sprintf(`%s?%s`, path, query)
+	path = fmt.Sprintf(`%s/?%s`, path, query)
 
 	req := Request{
 		Path:         path,

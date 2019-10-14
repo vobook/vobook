@@ -145,6 +145,46 @@ func TestGetContact(t *testing.T) {
 		assert.Equals(t, v.Value, resp.Props[i].Value)
 		assert.Equals(t, v.Order, resp.Props[i].Order)
 	}
+}
 
-	//spew.Dump(resp)
+func TestSearchContact(t *testing.T) {
+	Login(t)
+	elem, err := factories.CreateContact(models.Contact{UserID: AuthUser.ID})
+	assert.NotError(t, err)
+
+	props := make([]models.ContactProperty, 3)
+	for i := range props {
+		prop, err := factories.CreateContactProperty(models.ContactProperty{
+			ContactID: elem.ID,
+			Name:      fmt.Sprintf("Prop %d", i+1),
+			Order:     i + 1,
+		})
+		assert.NotError(t, err)
+		props[i] = prop
+	}
+
+	_, err = factories.CreateContact(models.Contact{UserID: AuthUser.ID})
+	assert.NotError(t, err)
+
+	deletedAt := time.Now()
+	elem3, err := factories.CreateContact(models.Contact{UserID: AuthUser.ID, DeletedAt: &deletedAt})
+	assert.NotError(t, err)
+
+	// should get 2 contacts
+	var req requests.SearchContact
+	var resp responses.SearchContact
+	TestSearch(t, "contacts", req, &resp)
+	assert.Equals(t, 2, len(resp.Data))
+
+	// should get 1 deleted contact
+	req = requests.SearchContact{Trashed: true}
+	TestSearch(t, "contacts", req, &resp)
+	assert.Equals(t, 1, len(resp.Data))
+	assert.Equals(t, elem3.ID, resp.Data[0].ID)
+
+	// should get 1 filtered contact
+	req = requests.SearchContact{Query: props[0].Value}
+	TestSearch(t, "contacts", req, &resp)
+	assert.Equals(t, 1, len(resp.Data))
+	assert.Equals(t, elem.ID, resp.Data[0].ID)
 }

@@ -29,25 +29,24 @@ func Create(m *models.Contact) (err error) {
 func Search(userID string, req requests.SearchContact) (data []models.Contact, count int, err error) {
 	q := database.ORM().Model(&data)
 	q.Apply(filters.PageFilter(req.Page, req.Limit))
-	q.Apply(filters.TrashedFilter(req.Trashed))
+	q.Apply(filters.TrashedFilter(req.Trashed, "contact"))
 
 	q.Where("user_id = ?", userID)
 
 	if len(req.Query) > 2 {
 		q.WhereGroup(func(q *orm.Query) (*orm.Query, error) {
+			q.Join("JOIN contact_properties cp ON cp.contact_id=contact.id")
 			q.WhereOr("first_name ilike ?", "%"+req.Query+"%")
 			q.WhereOr("last_name ilike ?", "%"+req.Query+"%")
-			q.WhereOr("name ilike ?", "%"+req.Query+"%")
+			q.WhereOr("contact.name ilike ?", "%"+req.Query+"%")
+			q.WhereOr("cp.value ilike ?", "%"+req.Query+"%")
 			return q, nil
 		})
-		q.Relation("Props", func(q *orm.Query) (*orm.Query, error) {
-			q.Where("value ?", "%"+req.Query+"%")
-			q.Order("order ASC")
-			return q, nil
-		})
-	} else {
-		q.Relation("Props")
 	}
+	q.Relation("Props", func(q *orm.Query) (*orm.Query, error) {
+		q.Order("order ASC")
+		return q, nil
+	})
 
 	count, err = q.SelectAndCount()
 	return

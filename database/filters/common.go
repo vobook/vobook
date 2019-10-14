@@ -29,13 +29,20 @@ func PageFilter(page, limit int) Filter {
 	}
 }
 
-func TrashedFilter(trashed bool) Filter {
+func TrashedFilter(trashed bool, optTable ...string) Filter {
+	col := "deleted_at"
+	if len(optTable) == 1 {
+		col = optTable[0] + "." + col
+	}
+	where := col + " is"
+	if trashed {
+		where += " not"
+	}
+	where += " null"
+
 	return func(q *orm.Query) (*orm.Query, error) {
-		if trashed {
-			q.Where("deleted_at is not null")
-		} else {
-			q.Where("deleted_at is null")
-		}
+		q.Where(where)
+
 		return q, nil
 	}
 }
