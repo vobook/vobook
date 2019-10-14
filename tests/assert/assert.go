@@ -7,16 +7,15 @@ import (
 
 	"github.com/go-pg/pg"
 	ta "github.com/stretchr/testify/assert"
+
 	"github.com/vovainside/vobook/database"
 	"github.com/vovainside/vobook/services/fs"
 	"github.com/vovainside/vobook/utils"
 )
 
-type NotNull bool
+type NotNilT bool
 
-func IsNotNull() NotNull {
-	return true
-}
+var NotNil = NotNilT(true)
 
 func DatabaseCount(t *testing.T, table string, data utils.M) int {
 	args := []interface{}{}
@@ -30,7 +29,7 @@ func DatabaseCount(t *testing.T, table string, data utils.M) int {
 			continue
 		}
 		switch val.(type) {
-		case NotNull:
+		case NotNilT:
 			wheres = append(wheres, fmt.Sprintf("%s IS NOT NULL", col))
 			continue
 		}
@@ -53,6 +52,19 @@ func DatabaseHas(t *testing.T, table string, data utils.M) {
 	count := DatabaseCount(t, table, data)
 	if count == 0 {
 		t.Fatal(fmt.Sprintf("Table %s missing row with data %+v", table, data))
+	}
+}
+
+func DatabaseHasDeleted(t *testing.T, table string, ids ...string) {
+	for _, id := range ids {
+		data := utils.M{
+			"id":         id,
+			"deleted_at": NotNil,
+		}
+		count := DatabaseCount(t, table, data)
+		if count == 0 {
+			t.Fatal(fmt.Sprintf("Table %s missing row with data %+v", table, data))
+		}
 	}
 }
 

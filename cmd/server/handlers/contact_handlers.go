@@ -28,7 +28,7 @@ func CreateContact(c *gin.Context) {
 	c.JSON(http.StatusCreated, elem)
 }
 
-func SearchContact(c *gin.Context) {
+func SearchContacts(c *gin.Context) {
 	var req requests.SearchContact
 	if !bindQuery(c, &req) {
 		return
@@ -63,6 +63,21 @@ func UpdateContact(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, responses.OK("Saved"))
+}
+
+func TrashContacts(c *gin.Context) {
+	var req requests.TrashContacts
+	if !bindJSON(c, &req) {
+		return
+	}
+
+	err := contact.Trash(AuthUser(c).ID, req.IDs...)
+	if err != nil {
+		Abort(c, err)
+		return
+	}
+
+	c.JSON(http.StatusOK, responses.OK("Success"))
 }
 
 func GetContact(c *gin.Context) {

@@ -5,6 +5,7 @@ import (
 	"testing"
 
 	fake "github.com/brianvoe/gofakeit"
+
 	"github.com/vovainside/vobook/cmd/server/errors"
 	"github.com/vovainside/vobook/cmd/server/requests"
 	"github.com/vovainside/vobook/cmd/server/responses"
@@ -151,10 +152,7 @@ func TestDeleteAccount(t *testing.T) {
 		"user_id": AuthUser.ID,
 	})
 
-	assert.DatabaseHas(t, "users", utils.M{
-		"id":         AuthUser.ID,
-		"deleted_at": assert.IsNotNull(),
-	})
+	assert.DatabaseHasDeleted(t, "users", AuthUser.ID)
 
 	sentMail := mail.TestRepo.GetMail(AuthUser.Email)
 	assert.Equals(t, config.Get().Mail.From, sentMail.From)

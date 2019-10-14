@@ -1,6 +1,8 @@
 package contact
 
 import (
+	"time"
+
 	"github.com/go-pg/pg/orm"
 
 	"github.com/vovainside/vobook/cmd/server/requests"
@@ -64,6 +66,17 @@ func Find(id string) (m models.Contact, err error) {
 func Update(m *models.Contact) (err error) {
 	err = database.ORM().
 		Update(m)
+
+	return
+}
+
+func Trash(userID string, ids ...string) (err error) {
+	_, err = database.ORM().
+		Model(&models.Contact{}).
+		Where("user_id = ?", userID).
+		WhereIn("id IN (?)", ids).
+		Set("deleted_at = ?", time.Now()).
+		Update()
 
 	return
 }

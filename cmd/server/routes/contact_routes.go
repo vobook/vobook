@@ -11,7 +11,7 @@ func contactRoutes(r *gin.RouterGroup) {
 	all := r.Group("contacts")
 	{
 		all.POST("/", handlers.CreateContact)
-		all.GET("/", handlers.SearchContact)
+		all.GET("/", handlers.SearchContacts)
 
 		one := all.Group(":id")
 		one.Use(middlewares.ContactMiddleware)
@@ -21,4 +21,9 @@ func contactRoutes(r *gin.RouterGroup) {
 		}
 
 	}
+
+	// because gin can't have routes that will match by willcard
+	// (panic: wildcard route ':id' conflicts with existing children in path)
+	// i'll gonna use verbs to get around this limitation
+	r.PUT("/trash-contacts/", handlers.TrashContacts)
 }

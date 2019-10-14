@@ -83,3 +83,11 @@ type SearchContact struct {
 func (r *SearchContact) Validate() (err error) {
 	return
 }
+
+type TrashContacts struct {
+	IDs []string `json:"ids"`
+}
+
+func (r *TrashContacts) Validate() (err error) {
+	return
+}
