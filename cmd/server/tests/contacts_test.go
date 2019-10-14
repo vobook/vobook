@@ -85,7 +85,8 @@ func TestCreateContact(t *testing.T) {
 }
 
 func TestUpdateContact(t *testing.T) {
-	elem, err := factories.CreateContact()
+	Login(t)
+	elem, err := factories.CreateContact(models.Contact{UserID: AuthUser.ID})
 	assert.NotError(t, err)
 
 	name := fake.Name()
@@ -114,7 +115,8 @@ func TestUpdateContact(t *testing.T) {
 }
 
 func TestGetContact(t *testing.T) {
-	elem, err := factories.CreateContact()
+	Login(t)
+	elem, err := factories.CreateContact(models.Contact{UserID: AuthUser.ID})
 	assert.NotError(t, err)
 
 	props := make([]models.ContactProperty, 3)
@@ -148,7 +150,7 @@ func TestGetContact(t *testing.T) {
 }
 
 func TestSearchContact(t *testing.T) {
-	Login(t)
+	ReLogin(t)
 	elem, err := factories.CreateContact(models.Contact{UserID: AuthUser.ID})
 	assert.NotError(t, err)
 

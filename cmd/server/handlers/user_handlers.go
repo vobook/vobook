@@ -68,7 +68,7 @@ func ChangeEmail(c *gin.Context) {
 		return
 	}
 
-	userEl := authUser(c)
+	userEl := AuthUser(c)
 	err := bcrypt.CompareHashAndPassword([]byte(userEl.Password), []byte(req.Password))
 	if err != nil {
 		abort422(c, errors.WrongPassword)
@@ -115,7 +115,7 @@ func ChangePassword(c *gin.Context) {
 		return
 	}
 
-	elem := authUser(c)
+	elem := AuthUser(c)
 	err := bcrypt.CompareHashAndPassword([]byte(elem.Password), []byte(req.OldPassword))
 	if err != nil {
 		abort422(c, errors.WrongPassword)
@@ -177,7 +177,7 @@ func Login(c *gin.Context) {
 }
 
 func GetAuthUser(c *gin.Context) {
-	c.JSON(http.StatusOK, authUser(c))
+	c.JSON(http.StatusOK, AuthUser(c))
 }
 
 func UpdateAuthUser(c *gin.Context) {
@@ -186,7 +186,7 @@ func UpdateAuthUser(c *gin.Context) {
 		return
 	}
 
-	userEl := authUser(c)
+	userEl := AuthUser(c)
 	req.ToModel(&userEl)
 
 	err := user.Update(&userEl)
@@ -204,7 +204,7 @@ func DeleteAuthUser(c *gin.Context) {
 		return
 	}
 
-	userEl := authUser(c)
+	userEl := AuthUser(c)
 
 	err := bcrypt.CompareHashAndPassword([]byte(userEl.Password), []byte(req.Password))
 	if err != nil {

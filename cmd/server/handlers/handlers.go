@@ -79,7 +79,7 @@ func bindQuery(c *gin.Context, req Validatable) (ok bool) {
 	return true
 }
 
-func authUser(c *gin.Context) models.User {
+func AuthUser(c *gin.Context) models.User {
 	elem := c.MustGet("user")
 	return elem.(models.User)
 }

@@ -18,7 +18,7 @@ func CreateContact(c *gin.Context) {
 	}
 
 	elem := req.ToModel()
-	elem.UserID = authUser(c).ID
+	elem.UserID = AuthUser(c).ID
 	err := contact.Create(elem)
 	if err != nil {
 		Abort(c, err)
@@ -34,7 +34,7 @@ func SearchContact(c *gin.Context) {
 		return
 	}
 
-	data, count, err := contact.Search(authUser(c).ID, req)
+	data, count, err := contact.Search(AuthUser(c).ID, req)
 	if err != nil {
 		Abort(c, err)
 		return
