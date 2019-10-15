@@ -123,11 +123,9 @@ func TestTrashContacts(t *testing.T) {
 	elem3, err := factories.CreateContact(models.Contact{UserID: AuthUser.ID})
 	assert.NotError(t, err)
 
-	req := requests.TrashContacts{
-		IDs: []string{
-			elem1.ID,
-			elem2.ID,
-		},
+	req := requests.IDs{
+		elem1.ID,
+		elem2.ID,
 	}
 	var resp responses.Success
 	TestUpdate(t, "trash-contacts", req, &resp)
@@ -136,6 +134,61 @@ func TestTrashContacts(t *testing.T) {
 	assert.DatabaseHas(t, "contacts", utils.M{
 		"id":         elem3.ID,
 		"deleted_at": nil,
+	})
+}
+
+func TestRestoreContacts(t *testing.T) {
+	Login(t)
+	deletedAt := time.Now()
+	elem1, err := factories.CreateContact(models.Contact{UserID: AuthUser.ID, DeletedAt: &deletedAt})
+	assert.NotError(t, err)
+	elem2, err := factories.CreateContact(models.Contact{UserID: AuthUser.ID, DeletedAt: &deletedAt})
+	assert.NotError(t, err)
+	elem3, err := factories.CreateContact(models.Contact{UserID: AuthUser.ID, DeletedAt: &deletedAt})
+	assert.NotError(t, err)
+
+	req := requests.IDs{
+		elem1.ID,
+		elem2.ID,
+	}
+	var resp responses.Success
+	TestUpdate(t, "restore-contacts", req, &resp)
+
+	assert.DatabaseHasDeleted(t, "contacts", elem3.ID)
+	assert.DatabaseHas(t, "contacts", utils.M{
+		"id":         elem1.ID,
+		"deleted_at": nil,
+	})
+	assert.DatabaseHas(t, "contacts", utils.M{
+		"id":         elem2.ID,
+		"deleted_at": nil,
+	})
+}
+
+func TestDeleteContacts(t *testing.T) {
+	Login(t)
+	elem1, err := factories.CreateContact(models.Contact{UserID: AuthUser.ID})
+	assert.NotError(t, err)
+	elem2, err := factories.CreateContact(models.Contact{UserID: AuthUser.ID})
+	assert.NotError(t, err)
+	elem3, err := factories.CreateContact(models.Contact{UserID: AuthUser.ID})
+	assert.NotError(t, err)
+
+	req := requests.IDs{
+		elem1.ID,
+		elem2.ID,
+	}
+	var resp responses.Success
+	TestUpdate(t, "delete-contacts", req, &resp)
+
+	assert.DatabaseHas(t, "contacts", utils.M{
+		"id": elem3.ID,
+	})
+	assert.DatabaseMissing(t, "contacts", utils.M{
+		"id": elem1.ID,
+	})
+	assert.DatabaseMissing(t, "contacts", utils.M{
+		"id": elem2.ID,
 	})
 }
 

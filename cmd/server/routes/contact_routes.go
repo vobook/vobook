@@ -26,4 +26,6 @@ func contactRoutes(r *gin.RouterGroup) {
 	// (panic: wildcard route ':id' conflicts with existing children in path)
 	// i'll gonna use verbs to get around this limitation
 	r.PUT("/trash-contacts/", handlers.TrashContacts)
+	r.PUT("/restore-contacts/", handlers.RestoreContacts)
+	r.PUT("/delete-contacts/", handlers.DeleteContacts)
 }

@@ -52,14 +52,6 @@ func New404(message string) error {
 	}
 }
 
-func New422Err(message string, err error) error {
-	return Error{
-		Code:    http.StatusUnprocessableEntity,
-		Message: message,
-		Err:     err,
-	}
-}
-
 type Error struct {
 	Code    int
 	Message string

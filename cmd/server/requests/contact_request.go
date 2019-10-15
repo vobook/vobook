@@ -84,10 +84,8 @@ func (r *SearchContact) Validate() (err error) {
 	return
 }
 
-type TrashContacts struct {
-	IDs []string `json:"ids"`
-}
+type IDs []string
 
-func (r *TrashContacts) Validate() (err error) {
+func (r *IDs) Validate() (err error) {
 	return
 }

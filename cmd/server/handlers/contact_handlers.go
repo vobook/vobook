@@ -66,12 +66,42 @@ func UpdateContact(c *gin.Context) {
 }
 
 func TrashContacts(c *gin.Context) {
-	var req requests.TrashContacts
-	if !bindJSON(c, &req) {
+	var ids requests.IDs
+	if !bindJSON(c, &ids) {
 		return
 	}
 
-	err := contact.Trash(AuthUser(c).ID, req.IDs...)
+	err := contact.Trash(AuthUser(c).ID, ids...)
+	if err != nil {
+		Abort(c, err)
+		return
+	}
+
+	c.JSON(http.StatusOK, responses.OK("Success"))
+}
+
+func RestoreContacts(c *gin.Context) {
+	var ids requests.IDs
+	if !bindJSON(c, &ids) {
+		return
+	}
+
+	err := contact.Restore(AuthUser(c).ID, ids...)
+	if err != nil {
+		Abort(c, err)
+		return
+	}
+
+	c.JSON(http.StatusOK, responses.OK("Success"))
+}
+
+func DeleteContacts(c *gin.Context) {
+	var ids requests.IDs
+	if !bindJSON(c, &ids) {
+		return
+	}
+
+	err := contact.Delete(AuthUser(c).ID, ids...)
 	if err != nil {
 		Abort(c, err)
 		return

@@ -2,14 +2,16 @@ package handlers
 
 import (
 	"net/http"
-
-	"github.com/vovainside/vobook/database/models"
+	"runtime/debug"
 
 	"github.com/gin-gonic/gin"
 	"github.com/go-pg/pg"
+	log "github.com/sirupsen/logrus"
 
 	"github.com/vovainside/vobook/cmd/server/errors"
 	"github.com/vovainside/vobook/cmd/server/responses"
+	"github.com/vovainside/vobook/config"
+	"github.com/vovainside/vobook/database/models"
 )
 
 type Validatable interface {
@@ -42,6 +44,10 @@ func Abort(c *gin.Context, err error) {
 
 	resp := responses.Error{
 		Error: e.Error(),
+	}
+
+	if !config.IsReleaseEnv() {
+		log.Println(string(debug.Stack()))
 	}
 
 	c.AbortWithStatusJSON(e.Code, resp)
