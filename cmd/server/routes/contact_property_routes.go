@@ -20,4 +20,5 @@ func contactPropertyRoutes(r *gin.RouterGroup) {
 	r.PUT("/trash-contact-properties/", handlers.TrashContactProperties)
 	r.PUT("/restore-contact-properties/", handlers.RestoreContactProperties)
 	r.PUT("/delete-contact-properties/", handlers.DeleteContactProperties)
+	r.PUT("/reorder-contact-properties/", handlers.ReorderContactProperties)
 }

@@ -4,13 +4,12 @@ import (
 	"testing"
 	"time"
 
-	"github.com/vovainside/vobook/database/models"
-
 	fake "github.com/brianvoe/gofakeit"
 
 	"github.com/vovainside/vobook/cmd/server/requests"
 	"github.com/vovainside/vobook/cmd/server/responses"
 	"github.com/vovainside/vobook/database/factories"
+	"github.com/vovainside/vobook/database/models"
 	. "github.com/vovainside/vobook/tests/apitest"
 	"github.com/vovainside/vobook/tests/assert"
 	"github.com/vovainside/vobook/utils"
@@ -145,5 +144,48 @@ func TestDeleteContactProperties(t *testing.T) {
 	})
 	assert.DatabaseHas(t, "contact_properties", utils.M{
 		"id": prop3.ID,
+	})
+}
+
+func TestReorderContactProperties(t *testing.T) {
+	u := Login(t)
+	contact, err := factories.CreateContact(models.Contact{UserID: u.ID})
+	assert.NotError(t, err)
+
+	prop1, err := factories.CreateContactProperty(models.ContactProperty{
+		ContactID: contact.ID,
+		Order:     10,
+	})
+	assert.NotError(t, err)
+	prop2, err := factories.CreateContactProperty(models.ContactProperty{
+		ContactID: contact.ID,
+		Order:     4,
+	})
+	assert.NotError(t, err)
+	prop3, err := factories.CreateContactProperty(models.ContactProperty{
+		ContactID: contact.ID,
+		Order:     12,
+	})
+	assert.NotError(t, err)
+
+	req := requests.IDs{
+		prop1.ID,
+		prop2.ID,
+		prop3.ID,
+	}
+	var resp responses.Success
+	TestUpdate(t, "reorder-contact-properties", req, &resp)
+
+	assert.DatabaseHas(t, "contact_properties", utils.M{
+		"id":    prop1.ID,
+		"order": 0,
+	})
+	assert.DatabaseHas(t, "contact_properties", utils.M{
+		"id":    prop2.ID,
+		"order": 1,
+	})
+	assert.DatabaseHas(t, "contact_properties", utils.M{
+		"id":    prop3.ID,
+		"order": 2,
 	})
 }

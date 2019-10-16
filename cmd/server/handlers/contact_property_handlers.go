@@ -74,6 +74,21 @@ func DeleteContactProperties(c *gin.Context) {
 	c.JSON(http.StatusOK, responses.OK("Deleted"))
 }
 
+func ReorderContactProperties(c *gin.Context) {
+	var req requests.IDs
+	if !bindJSON(c, &req) {
+		return
+	}
+
+	err := contactproperty.Reorder(AuthUser(c).ID, req)
+	if err != nil {
+		Abort(c, err)
+		return
+	}
+
+	c.JSON(http.StatusOK, responses.OK("Saved"))
+}
+
 func getContactPropertyFromRequest(c *gin.Context) models.ContactProperty {
 	elem := c.MustGet("contact-property")
 	return elem.(models.ContactProperty)

@@ -61,3 +61,17 @@ func Delete(userID string, ids ...string) (err error) {
 
 	return
 }
+
+func Reorder(userID string, ids []string) (err error) {
+	for i, id := range ids {
+		_, err = database.ORM().Exec(
+			"UPDATE contact_properties SET \"order\"=? WHERE id = ? AND contact_id IN "+
+				"(SELECT id FROM contacts WHERE user_id=?)",
+			i, id, userID)
+		if err != nil {
+			return
+		}
+	}
+
+	return
+}
