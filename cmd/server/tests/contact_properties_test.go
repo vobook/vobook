@@ -2,6 +2,9 @@ package tests
 
 import (
 	"testing"
+	"time"
+
+	"github.com/vovainside/vobook/database/models"
 
 	fake "github.com/brianvoe/gofakeit"
 
@@ -14,10 +17,12 @@ import (
 )
 
 func TestUpdateContactProperty(t *testing.T) {
-	prop, err := factories.CreateContactProperty()
-	if err != nil {
-		return
-	}
+	u := Login(t)
+	contact, err := factories.CreateContact(models.Contact{UserID: u.ID})
+	assert.NotError(t, err)
+	prop, err := factories.CreateContactProperty(models.ContactProperty{ContactID: contact.ID})
+	assert.NotError(t, err)
+
 	name := fake.Name()
 	value := fake.Name()
 	req := requests.UpdateContactProperty{
@@ -33,5 +38,112 @@ func TestUpdateContactProperty(t *testing.T) {
 		"type":  prop.Type,
 		"name":  name,
 		"value": value,
+	})
+}
+
+func TestTrashContactProperties(t *testing.T) {
+	u := Login(t)
+	contact, err := factories.CreateContact(models.Contact{UserID: u.ID})
+	assert.NotError(t, err)
+
+	prop1, err := factories.CreateContactProperty(models.ContactProperty{ContactID: contact.ID})
+	assert.NotError(t, err)
+	prop2, err := factories.CreateContactProperty(models.ContactProperty{ContactID: contact.ID})
+	assert.NotError(t, err)
+	prop3, err := factories.CreateContactProperty(models.ContactProperty{ContactID: contact.ID})
+	assert.NotError(t, err)
+
+	req := requests.IDs{
+		prop1.ID,
+		prop2.ID,
+	}
+	var resp responses.Success
+	TestUpdate(t, "trash-contact-properties", req, &resp)
+
+	assert.DatabaseHasDeleted(t, "contact_properties", prop1.ID, prop2.ID)
+	assert.DatabaseHas(t, "contact_properties", utils.M{
+		"id":         prop3.ID,
+		"deleted_at": nil,
+	})
+}
+
+func TestRestoreContactProperties(t *testing.T) {
+	u := Login(t)
+	contact, err := factories.CreateContact(models.Contact{UserID: u.ID})
+	assert.NotError(t, err)
+
+	deletedAt := time.Now()
+	prop1, err := factories.CreateContactProperty(models.ContactProperty{
+		ContactID: contact.ID,
+		DeletedAt: &deletedAt,
+	})
+	assert.NotError(t, err)
+	prop2, err := factories.CreateContactProperty(models.ContactProperty{
+		ContactID: contact.ID,
+		DeletedAt: &deletedAt,
+	})
+	assert.NotError(t, err)
+	prop3, err := factories.CreateContactProperty(models.ContactProperty{
+		ContactID: contact.ID,
+		DeletedAt: &deletedAt,
+	})
+	assert.NotError(t, err)
+
+	req := requests.IDs{
+		prop1.ID,
+		prop2.ID,
+	}
+	var resp responses.Success
+	TestUpdate(t, "restore-contact-properties", req, &resp)
+
+	assert.DatabaseHas(t, "contact_properties", utils.M{
+		"id":         prop1.ID,
+		"deleted_at": nil,
+	})
+	assert.DatabaseHas(t, "contact_properties", utils.M{
+		"id":         prop2.ID,
+		"deleted_at": nil,
+	})
+	assert.DatabaseHas(t, "contact_properties", utils.M{
+		"id":         prop3.ID,
+		"deleted_at": assert.NotNil,
+	})
+}
+
+func TestDeleteContactProperties(t *testing.T) {
+	u := Login(t)
+	contact, err := factories.CreateContact(models.Contact{UserID: u.ID})
+	assert.NotError(t, err)
+
+	deletedAt := time.Now()
+	prop1, err := factories.CreateContactProperty(models.ContactProperty{
+		ContactID: contact.ID,
+		DeletedAt: &deletedAt,
+	})
+	assert.NotError(t, err)
+	prop2, err := factories.CreateContactProperty(models.ContactProperty{
+		ContactID: contact.ID,
+	})
+	assert.NotError(t, err)
+	prop3, err := factories.CreateContactProperty(models.ContactProperty{
+		ContactID: contact.ID,
+	})
+	assert.NotError(t, err)
+
+	req := requests.IDs{
+		prop1.ID,
+		prop2.ID,
+	}
+	var resp responses.Success
+	TestUpdate(t, "delete-contact-properties", req, &resp)
+
+	assert.DatabaseMissing(t, "contact_properties", utils.M{
+		"id": prop1.ID,
+	})
+	assert.DatabaseMissing(t, "contact_properties", utils.M{
+		"id": prop2.ID,
+	})
+	assert.DatabaseHas(t, "contact_properties", utils.M{
+		"id": prop3.ID,
 	})
 }

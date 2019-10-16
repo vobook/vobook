@@ -150,13 +150,15 @@ func TestRequest(t *testing.T, req Request) *httptest.ResponseRecorder {
 	return resp
 }
 
-func Login(t *testing.T) {
+func Login(t *testing.T) *models.User {
 	if AuthUser != nil && authToken != "" {
-		return
+		return AuthUser
 	}
 	user, err := factories.CreateUser()
 	assert.NotError(t, err)
 	LoginAs(t, &user)
+
+	return &user
 }
 
 func User(t *testing.T) *models.User {

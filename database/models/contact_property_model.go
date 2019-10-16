@@ -15,7 +15,9 @@ type ContactProperty struct {
 	Value     string               `json:"value" pg:",use_zero"`
 	Order     int                  `json:"order" pg:",use_zero"`
 	CreatedAt time.Time            `json:"created_at"`
-	DeletedAt time.Time            `json:"deleted_at"`
+	DeletedAt *time.Time           `json:"deleted_at"`
+
+	Contact *Contact `json:"-"`
 }
 
 func (m *ContactProperty) BeforeInsert(ctx context.Context) (context.Context, error) {
