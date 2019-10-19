@@ -7,7 +7,7 @@ import (
 )
 
 const (
-	checkInterval = 1 * time.Minute / 10
+	checkInterval = 1 * time.Minute
 )
 
 func Start(exit <-chan bool) {
@@ -26,11 +26,11 @@ loop:
 			log.Println("Test worker stopped")
 			break loop
 		case <-ticker.C:
-			go check()
+			go work()
 		}
 	}
 }
 
-func check() {
-	log.Println("working")
+func work() {
+	log.Println("test working...")
 }

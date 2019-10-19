@@ -14,6 +14,7 @@ create table users
     email          text unique      not null,
     email_verified bool                      default false,
     password       text             not null,
+	telegram_id	   int,
     created_at     timestamptz      not null,
     deleted_at     timestamptz
 );
@@ -57,6 +58,7 @@ create table contacts
     last_name   text,
     middle_name text,
     birthday    timestamptz,
+    gender    int,
     created_at  timestamptz      not null,
     deleted_at  timestamptz
 );

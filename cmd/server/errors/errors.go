@@ -22,6 +22,7 @@ var (
 	PasswordResetTokenNotFound = New404("Invalid password reset request")
 	PasswordResetTokenExpired  = New404("Password reset request expired")
 	InvalidContactPropertyType = New422("Invalid contact property type")
+	InvalidGender              = New422("Invalid gender")
 	ContactNotFound            = New404("Contact not found")
 )
 
