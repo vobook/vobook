@@ -74,6 +74,13 @@ create table contact_properties
     created_at timestamptz      not null,
     deleted_at timestamptz
 );
+
+create table birthday_notification_logs
+(
+    id         uuid primary key not null default gen_random_uuid(),
+    contact_id uuid             not null references contacts (id),
+    created_at timestamptz      not null
+);
 `
 
 	migrations.MustRegister(func(db migrations.DB) (err error) {

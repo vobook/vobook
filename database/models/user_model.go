@@ -17,7 +17,7 @@ type User struct {
 	DeletedAt     time.Time `json:"deleted_at"`
 
 	// Composite fields
-	HasTelegram bool `json:"has_telegram" sql:"-"`
+	HasTelegram bool `json:"has_telegram" pg:"-"`
 }
 
 func (m *User) BeforeInsert(ctx context.Context) (context.Context, error) {
