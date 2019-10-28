@@ -2,13 +2,13 @@ package requests
 
 import (
 	"github.com/vovainside/vobook/database/models"
-	"github.com/vovainside/vobook/enum/contact_property"
+	"github.com/vovainside/vobook/enum/contact_property_type"
 )
 
 type CreateContactProperty struct {
-	Type  contactproperty.Type `json:"type"`
-	Name  string               `json:"name"`
-	Value string               `json:"value"`
+	Type  contactpropertytype.Type `json:"type"`
+	Name  string                   `json:"name"`
+	Value string                   `json:"value"`
 }
 
 func (r *CreateContactProperty) Validate() (err error) {

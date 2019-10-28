@@ -6,80 +6,82 @@ import (
 
 func init() {
 	mg := `
-create table users
+CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+
+CREATE TABLE users
 (
-    id             uuid primary key not null default gen_random_uuid(),
-    first_name     text,
-    last_name      text,
-    email          text unique      not null,
-    email_verified bool                      default false,
-    password       text             not null,
-	telegram_id	   int,
-    created_at     timestamptz      not null,
-    deleted_at     timestamptz
+    id             UUID PRIMARY KEY NOT NULL DEFAULT uuid_generate_v4(),
+    first_name     TEXT,
+    last_name      TEXT,
+    email          TEXT UNIQUE      NOT NULL,
+    email_verified BOOL                      DEFAULT FALSE,
+    password       TEXT             NOT NULL,
+    telegram_id    INT,
+    created_at     TIMESTAMPTZ      NOT NULL,
+    deleted_at     TIMESTAMPTZ
 );
 
-create table email_verifications
+CREATE TABLE email_verifications
 (
-    id         uuid primary key not null default gen_random_uuid(),
-    token      text             not null,
-    user_id    uuid             not null references users (id),
-    email      text,
-    created_at timestamptz      not null
+    id         UUID PRIMARY KEY NOT NULL DEFAULT uuid_generate_v4(),
+    token      TEXT             NOT NULL,
+    user_id    UUID             NOT NULL REFERENCES users (id),
+    email      TEXT,
+    created_at TIMESTAMPTZ      NOT NULL
 );
 
-create table auth_tokens
+CREATE TABLE auth_tokens
 (
-    id         uuid primary key default gen_random_uuid(),
-    user_id    uuid        not null references users (id),
-    client_id  int         not null,
-    client_ip  text,
-    user_agent text,
-    token      text,
-    created_at timestamptz not null,
-    expires_at timestamptz not null
+    id         UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    user_id    UUID        NOT NULL REFERENCES users (id),
+    client_id  INT         NOT NULL,
+    client_ip  TEXT,
+    user_agent TEXT,
+    token      TEXT,
+    created_at TIMESTAMPTZ NOT NULL,
+    expires_at TIMESTAMPTZ NOT NULL
 );
 
-create table password_resets
+CREATE TABLE password_resets
 (
-    id         uuid primary key default gen_random_uuid(),
-    user_id    uuid        not null references users (id),
-    token      text        not null,
-    created_at timestamptz not null,
-    expires_at timestamptz not null
+    id         UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    user_id    UUID        NOT NULL REFERENCES users (id),
+    token      TEXT        NOT NULL,
+    created_at TIMESTAMPTZ NOT NULL,
+    expires_at TIMESTAMPTZ NOT NULL
 );
 
-create table contacts
+CREATE TABLE contacts
 (
-    id          uuid primary key not null default gen_random_uuid(),
-    user_id     uuid             not null references users (id),
-    name        text,
-    first_name  text,
-    last_name   text,
-    middle_name text,
-    birthday    timestamptz,
-    gender    int,
-    created_at  timestamptz      not null,
-    deleted_at  timestamptz
+    id          UUID PRIMARY KEY NOT NULL DEFAULT uuid_generate_v4(),
+    user_id     UUID             NOT NULL REFERENCES users (id),
+    name        TEXT,
+    first_name  TEXT,
+    last_name   TEXT,
+    middle_name TEXT,
+    birthday    TIMESTAMPTZ,
+    gender      INT,
+    created_at  TIMESTAMPTZ      NOT NULL,
+    deleted_at  TIMESTAMPTZ
 );
 
-create table contact_properties
+CREATE TABLE contact_properties
 (
-    id         uuid primary key not null default gen_random_uuid(),
-    contact_id uuid             not null references contacts (id),
-    name       text not null,
-    type       int not null,
-    value      text not null,
-    "order"    int not null,
-    created_at timestamptz      not null,
-    deleted_at timestamptz
+    id         UUID PRIMARY KEY NOT NULL DEFAULT uuid_generate_v4(),
+    contact_id UUID             NOT NULL REFERENCES contacts (id),
+    name       TEXT             NOT NULL,
+    type       INT              NOT NULL,
+    value      TEXT             NOT NULL,
+    "order"    INT              NOT NULL,
+    created_at TIMESTAMPTZ      NOT NULL,
+    deleted_at TIMESTAMPTZ
 );
 
-create table birthday_notification_logs
+CREATE TABLE birthday_notification_logs
 (
-    id         uuid primary key not null default gen_random_uuid(),
-    contact_id uuid             not null references contacts (id),
-    created_at timestamptz      not null
+    id         UUID PRIMARY KEY NOT NULL DEFAULT uuid_generate_v4(),
+    contact_id UUID             NOT NULL REFERENCES contacts (id),
+    created_at TIMESTAMPTZ      NOT NULL
 );
 `
 
