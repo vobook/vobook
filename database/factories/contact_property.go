@@ -5,7 +5,7 @@ import (
 
 	"github.com/vovainside/vobook/database"
 	"github.com/vovainside/vobook/database/models"
-	"github.com/vovainside/vobook/enum/contact_property"
+	"github.com/vovainside/vobook/enum/contact_property_type"
 )
 
 func MakeContactProperty(mOpt ...models.ContactProperty) (m models.ContactProperty, err error) {
@@ -23,7 +23,7 @@ func MakeContactProperty(mOpt ...models.ContactProperty) (m models.ContactProper
 	}
 
 	if m.Type == 0 {
-		m.Type = contactproperty.RandomType()
+		m.Type = contactpropertytype.Random()
 	}
 	if m.Name == "" {
 		m.Name = fake.Name()

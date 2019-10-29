@@ -12,7 +12,7 @@ import (
 	"github.com/vovainside/vobook/cmd/server/responses"
 	"github.com/vovainside/vobook/database/factories"
 	"github.com/vovainside/vobook/database/models"
-	"github.com/vovainside/vobook/enum/contact_property"
+	"github.com/vovainside/vobook/enum/contact_property_type"
 	. "github.com/vovainside/vobook/tests/apitest"
 	"github.com/vovainside/vobook/tests/assert"
 	"github.com/vovainside/vobook/utils"
@@ -26,25 +26,25 @@ func TestCreateContact(t *testing.T) {
 		Birthday:  fake.DateRange(time.Now().AddDate(-100, 0, 0), time.Now()),
 		Properties: []requests.CreateContactProperty{
 			{
-				Type:  contactproperty.TypeEmail,
+				Type:  contactpropertytype.Email,
 				Value: fake.Email(),
 			},
 			{
-				Type:  contactproperty.TypePhone,
+				Type:  contactpropertytype.Phone,
 				Value: fake.PhoneFormatted(),
 			},
 			{
-				Type:  contactproperty.TypePhone,
+				Type:  contactpropertytype.Phone,
 				Value: fake.PhoneFormatted(),
 				Name:  "Only SMS",
 			},
 			{
-				Type:  contactproperty.TypeLink,
+				Type:  contactpropertytype.Link,
 				Value: fake.URL(),
 				Name:  "limit for me",
 			},
 			{
-				Type:  contactproperty.TypeOther,
+				Type:  contactpropertytype.Other,
 				Value: fake.Sentence(3),
 				Name:  "hello",
 			},

@@ -1,6 +1,6 @@
 subject: "{app-name}: Email change verification"
 body: >
   <p>You requested an email change at {app-name}.</p>
-  <p>To verify your email follow this link: <a href="{link}">Verify email</a>
+  <p>To verify your email follow this link: <a href="{link}">Verify email</a></p>
 
 
