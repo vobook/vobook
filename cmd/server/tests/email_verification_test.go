@@ -62,7 +62,7 @@ func TestVerifyNewEmail(t *testing.T) {
 	})
 }
 
-func TestVerifyNEmail_ShouldBeExpired(t *testing.T) {
+func TestVerifyEmail_ShouldBeExpired(t *testing.T) {
 	ev, err := factories.CreateEmailVerification()
 	assert.NotError(t, err)
 
