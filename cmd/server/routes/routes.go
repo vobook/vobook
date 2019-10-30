@@ -1,6 +1,7 @@
 package routes
 
 import (
+	"github.com/gin-contrib/cors"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -11,6 +12,8 @@ import (
 
 func Register(r *gin.Engine) {
 	conf := config.Get()
+
+	r.Use(cors.Default())
 
 	api := r.Group(conf.ApiBasePath)
 	api.GET("/", func(c *gin.Context) {

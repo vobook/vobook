@@ -37,6 +37,7 @@ func main() {
 		}
 	}()
 
+	log.Println(conf.App.Name + "." + conf.App.Env + " serving at " + conf.Server.Host + ":" + conf.Server.Port)
 	err := server.ListenAndServe()
 	if err != nil && err != http.ErrServerClosed {
 		log.Fatal(err.Error())
