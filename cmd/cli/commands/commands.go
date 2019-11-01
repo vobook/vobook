@@ -8,6 +8,8 @@ import (
 	"time"
 
 	"github.com/go-pg/pg"
+	"github.com/go-pg/pg/orm"
+	"github.com/vovainside/vobook/database"
 )
 
 type command struct {
@@ -18,7 +20,7 @@ type command struct {
 
 var (
 	repo = map[string]command{}
-	DB   *pg.DB
+	DB   orm.DB
 )
 
 func add(params ...interface{}) {
@@ -50,17 +52,36 @@ func add(params ...interface{}) {
 	}
 }
 
-func Run(name string, args ...string) error {
+func Run(name string, args ...string) (err error) {
 	cmd, ok := repo[name]
 	if ok {
-		startedAt := time.Now()
-		err := cmd.handler(args...)
+		db := database.Conn()
+		var tx *pg.Tx
+		tx, err = db.Conn().Begin()
 		if err != nil {
+			return
+		}
+		database.SetDB(tx)
+		DB = database.ORM()
+
+		startedAt := time.Now()
+		err = cmd.handler(args...)
+		if err != nil {
+			err2 := tx.Rollback()
+			if err2 != nil {
+				println("tx rollback err:", err2.Error())
+			}
 			return err
 		}
+
 		if cmd.countTime {
 			duration := time.Since(startedAt)
 			fmt.Printf("Done in %s\n", duration.Round(time.Millisecond).String())
+		}
+
+		err2 := tx.Commit()
+		if err2 != nil {
+			println("tx commit err:", err2.Error())
 		}
 
 		return nil

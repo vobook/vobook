@@ -84,12 +84,14 @@ func (r *Login) Validate() (err error) {
 	err = validation.ValidateStruct(r,
 		validation.Field(
 			&r.Email,
-			validation.Required,
+			validation.Required.Error("That's ridiculous fail: where's your email?"),
+			// TODO change to "login" to allow login with email or phone
+			//validation.Required.Error("Don't act like Mister Bean, just enter your login"),
 			is.Email,
 		),
 		validation.Field(
 			&r.Password,
-			validation.Required,
+			validation.Required.Error("That sounds like a prank cause your password is blank"),
 		),
 	)
 
