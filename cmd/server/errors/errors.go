@@ -28,13 +28,13 @@ var (
 
 func New400(message string) error {
 	return Error{
-		Code:    http.StatusUnauthorized,
+		Code:    http.StatusBadRequest,
 		Message: message,
 	}
 }
 func New401(message string) error {
 	return Error{
-		Code:    http.StatusBadRequest,
+		Code:    http.StatusUnauthorized,
 		Message: message,
 	}
 }

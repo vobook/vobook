@@ -10,21 +10,21 @@ import (
 type Type int
 
 const (
-	Other Type = iota
-	PersonalPhone
-	WorkPhone
-	PersonalEmail
-	WorkEmail
-	Phone
-	Email
-	Address
-	Facebook
-	Twitter
-	Github
-	WhatsApp
-	Telegram
-	Link
-	Note
+	Other         Type = iota
+	PersonalPhone      // 1
+	WorkPhone          // 2
+	PersonalEmail      // 3
+	WorkEmail          // 4
+	Phone              // 5
+	Email              // 6
+	Address            // 7
+	Facebook           // 8
+	Twitter            // 9
+	Github             // 10
+	WhatsApp           // 11
+	Telegram           // 12
+	Link               // 13
+	Note               // 14
 )
 
 func (t Type) String() string {
@@ -35,6 +35,10 @@ func (t Type) String() string {
 		return "Personal phone"
 	case WorkPhone:
 		return "Work phone"
+	case Phone:
+		return "Phone"
+	case Email:
+		return "Email"
 	case PersonalEmail:
 		return "Personal email"
 	case WorkEmail:
@@ -51,6 +55,8 @@ func (t Type) String() string {
 		return "WhatsApp"
 	case Telegram:
 		return "Telegram"
+	case Link:
+		return "Link"
 	case Note:
 		return "Note"
 	}
