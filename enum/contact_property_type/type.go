@@ -10,21 +10,22 @@ import (
 type Type int
 
 const (
-	Other         Type = iota
-	PersonalPhone      // 1
-	WorkPhone          // 2
-	PersonalEmail      // 3
-	WorkEmail          // 4
-	Phone              // 5
-	Email              // 6
-	Address            // 7
-	Facebook           // 8
-	Twitter            // 9
-	Github             // 10
-	WhatsApp           // 11
-	Telegram           // 12
-	Link               // 13
-	Note               // 14
+	_             Type = iota
+	Other              // 1
+	PersonalPhone      // 2
+	WorkPhone          // 3
+	PersonalEmail      // 4
+	WorkEmail          // 5
+	Phone              // 6
+	Email              // 7
+	Address            // 8
+	Facebook           // 9
+	Twitter            // 10
+	Github             // 11
+	WhatsApp           // 12
+	Telegram           // 13
+	Link               // 15
+	Note               // 16
 )
 
 func (t Type) String() string {
@@ -93,5 +94,5 @@ var All = []Type{
 }
 
 func Random() Type {
-	return All[rand.Intn(len(All)-1)]
+	return All[rand.Intn(len(All)-1)+1]
 }
