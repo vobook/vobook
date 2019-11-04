@@ -102,7 +102,7 @@ func seed(args ...string) (err error) {
 
 					switch v {
 					case contactpropertytype.PersonalPhone, contactpropertytype.WorkPhone, contactpropertytype.Phone:
-						prop.Value = fake.Phone()
+						prop.Value = fake.PhoneFormatted()
 					case contactpropertytype.WorkEmail, contactpropertytype.PersonalEmail, contactpropertytype.Email:
 						prop.Value = fake.Email()
 					}

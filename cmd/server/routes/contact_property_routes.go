@@ -17,6 +17,8 @@ func contactPropertyRoutes(r *gin.RouterGroup) {
 		}
 	}
 
+	r.GET("/contact-property-types/", handlers.GetContactPropertyTypes)
+
 	r.PUT("/trash-contact-properties/", handlers.TrashContactProperties)
 	r.PUT("/restore-contact-properties/", handlers.RestoreContactProperties)
 	r.PUT("/delete-contact-properties/", handlers.DeleteContactProperties)

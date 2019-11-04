@@ -4,6 +4,8 @@ import (
 	"testing"
 	"time"
 
+	contactpropertytype "github.com/vovainside/vobook/enum/contact_property_type"
+
 	fake "github.com/brianvoe/gofakeit"
 
 	"github.com/vovainside/vobook/cmd/server/requests"
@@ -188,4 +190,13 @@ func TestReorderContactProperties(t *testing.T) {
 		"id":    prop3.ID,
 		"order": 2,
 	})
+}
+
+func TestGetContactPropertyTypes(t *testing.T) {
+	Login(t)
+
+	var resp []contactpropertytype.TypeModel
+	Fetch(t, "contact-property-types", &resp)
+
+	assert.Equals(t, len(contactpropertytype.All), len(resp))
 }

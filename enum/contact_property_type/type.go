@@ -93,6 +93,11 @@ var All = []Type{
 	Note,
 }
 
+type TypeModel struct {
+	Type Type   `json:"type"`
+	Name string `json:"name"`
+}
+
 func Random() Type {
 	return All[rand.Intn(len(All)-1)+1]
 }

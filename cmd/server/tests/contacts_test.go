@@ -7,12 +7,11 @@ import (
 
 	fake "github.com/brianvoe/gofakeit"
 	"github.com/davecgh/go-spew/spew"
-
 	"github.com/vovainside/vobook/cmd/server/requests"
 	"github.com/vovainside/vobook/cmd/server/responses"
 	"github.com/vovainside/vobook/database/factories"
 	"github.com/vovainside/vobook/database/models"
-	"github.com/vovainside/vobook/enum/contact_property_type"
+	contactpropertytype "github.com/vovainside/vobook/enum/contact_property_type"
 	. "github.com/vovainside/vobook/tests/apitest"
 	"github.com/vovainside/vobook/tests/assert"
 	"github.com/vovainside/vobook/utils"
@@ -209,7 +208,7 @@ func TestGetContact(t *testing.T) {
 	}
 
 	var resp models.Contact
-	TestGetByID(t, "contacts/"+elem.ID, &resp)
+	Fetch(t, "contacts/"+elem.ID, &resp)
 
 	assert.Equals(t, elem.ID, resp.ID)
 	assert.Equals(t, elem.FirstName, resp.FirstName)

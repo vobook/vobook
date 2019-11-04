@@ -3,12 +3,14 @@ package handlers
 import (
 	"net/http"
 
+	contactpropertytype "github.com/vovainside/vobook/enum/contact_property_type"
+
 	"github.com/gin-gonic/gin"
 
 	"github.com/vovainside/vobook/cmd/server/requests"
 	"github.com/vovainside/vobook/cmd/server/responses"
 	"github.com/vovainside/vobook/database/models"
-	"github.com/vovainside/vobook/domain/contact_property"
+	contactproperty "github.com/vovainside/vobook/domain/contact_property"
 )
 
 func UpdateContactProperty(c *gin.Context) {
@@ -87,6 +89,16 @@ func ReorderContactProperties(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, responses.OK("Saved"))
+}
+
+func GetContactPropertyTypes(c *gin.Context) {
+	types := make([]contactpropertytype.TypeModel, len(contactpropertytype.All))
+	for i, t := range contactpropertytype.All {
+		types[i].Type = t
+		types[i].Name = t.String()
+	}
+
+	c.JSON(http.StatusOK, types)
 }
 
 func getContactPropertyFromRequest(c *gin.Context) models.ContactProperty {

@@ -19,7 +19,7 @@ import (
 	"github.com/vovainside/vobook/database"
 	"github.com/vovainside/vobook/database/factories"
 	"github.com/vovainside/vobook/database/models"
-	"github.com/vovainside/vobook/domain/auth_token"
+	authtoken "github.com/vovainside/vobook/domain/auth_token"
 	"github.com/vovainside/vobook/logger"
 	"github.com/vovainside/vobook/services/mail"
 	"github.com/vovainside/vobook/tests/assert"
@@ -268,8 +268,8 @@ func Delete(t *testing.T, path string, response interface{}) *httptest.ResponseR
 	return DELETE(t, req)
 }
 
-// TestGetByID makes "get" request for a single entity
-func TestGetByID(t *testing.T, path string, response interface{}) *httptest.ResponseRecorder {
+// Fetch makes simple "get" request
+func Fetch(t *testing.T, path string, response interface{}) *httptest.ResponseRecorder {
 	req := Request{
 		Path:         path,
 		BindResponse: response,
