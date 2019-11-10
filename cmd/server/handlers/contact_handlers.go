@@ -17,9 +17,13 @@ func CreateContact(c *gin.Context) {
 		return
 	}
 
-	elem := req.ToModel()
+	elem, err := req.ToModel()
+	if err != nil {
+		Abort(c, err)
+		return
+	}
 	elem.UserID = AuthUser(c).ID
-	err := contact.Create(elem)
+	err = contact.Create(elem)
 	if err != nil {
 		Abort(c, err)
 		return

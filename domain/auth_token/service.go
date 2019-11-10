@@ -31,7 +31,7 @@ func Find(token string) (elem models.AuthToken, err error) {
 		Where("token = ?", token).
 		First()
 	if err == pg.ErrNoRows {
-		err = errors.AuthTokenInvalid
+		err = errors.AuthTokenNotFound
 	}
 
 	return

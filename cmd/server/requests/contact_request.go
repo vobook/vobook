@@ -3,6 +3,8 @@ package requests
 import (
 	"time"
 
+	"github.com/vovainside/vobook/cmd/server/errors"
+	"github.com/vovainside/vobook/config"
 	"github.com/vovainside/vobook/database/models"
 )
 
@@ -11,11 +13,16 @@ type CreateContact struct {
 	FirstName  string                  `json:"first_name"`
 	LastName   string                  `json:"last_name"`
 	MiddleName string                  `json:"middle_name"`
-	Birthday   time.Time               `json:"birthday"`
-	Properties []CreateContactProperty `json:"properties"`
+	Birthday   string                  `json:"birthday"`
+	Properties []CreateContactProperty `json:"props"`
 }
 
 func (r *CreateContact) Validate() (err error) {
+	if (r.Name + r.FirstName + r.LastName + r.MiddleName) == "" {
+		err = errors.CreateContactNameEmpty
+		return
+	}
+
 	for _, v := range r.Properties {
 		err = v.Validate()
 		if err != nil {
@@ -25,13 +32,20 @@ func (r *CreateContact) Validate() (err error) {
 	return
 }
 
-func (r *CreateContact) ToModel() *models.Contact {
-	m := &models.Contact{
+func (r *CreateContact) ToModel() (m *models.Contact, err error) {
+	m = &models.Contact{
 		Name:       r.Name,
 		FirstName:  r.FirstName,
 		LastName:   r.LastName,
 		MiddleName: r.MiddleName,
-		Birthday:   r.Birthday,
+	}
+	if r.Birthday != "" {
+		var bDayDate time.Time
+		bDayDate, err = time.Parse(config.Get().DateFormat, r.Birthday)
+		if err != nil {
+			return
+		}
+		m.Birthday = &bDayDate
 	}
 
 	m.Props = make([]models.ContactProperty, len(r.Properties))
@@ -40,7 +54,7 @@ func (r *CreateContact) ToModel() *models.Contact {
 		m.Props[i].Order = i + 1
 	}
 
-	return m
+	return
 }
 
 type UpdateContact struct {
@@ -69,7 +83,7 @@ func (r *UpdateContact) ToModel(m *models.Contact) {
 		m.MiddleName = *r.MiddleName
 	}
 	if r.Birthday != nil {
-		m.Birthday = *r.Birthday
+		m.Birthday = r.Birthday
 	}
 }
 

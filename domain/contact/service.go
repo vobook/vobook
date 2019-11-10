@@ -11,7 +11,7 @@ import (
 	"github.com/vovainside/vobook/database"
 	"github.com/vovainside/vobook/database/filters"
 	"github.com/vovainside/vobook/database/models"
-	"github.com/vovainside/vobook/domain/contact_property"
+	contactproperty "github.com/vovainside/vobook/domain/contact_property"
 )
 
 func Create(m *models.Contact) (err error) {
@@ -52,6 +52,7 @@ func Search(userID string, req requests.SearchContact) (data []models.Contact, c
 		return q, nil
 	})
 
+	q.Order("contact.created_at DESC")
 	count, err = q.SelectAndCount()
 	return
 }

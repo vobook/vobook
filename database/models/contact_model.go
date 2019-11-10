@@ -14,7 +14,7 @@ type Contact struct {
 	FirstName  string      `json:"first_name"`
 	LastName   string      `json:"last_name"`
 	MiddleName string      `json:"middle_name"`
-	Birthday   time.Time   `json:"birthday"`
+	Birthday   *time.Time  `json:"birthday"`
 	Gender     gender.Type `json:"gender"`
 	CreatedAt  time.Time   `json:"created_at"`
 	DeletedAt  *time.Time  `json:"deleted_at"`

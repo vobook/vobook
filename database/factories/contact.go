@@ -31,8 +31,9 @@ func MakeContact(mOpt ...models.Contact) (m models.Contact, err error) {
 	if m.MiddleName == "" {
 		m.MiddleName = fake.LastName()
 	}
-	if m.Birthday.IsZero() {
-		m.Birthday = fake.DateRange(time.Now().AddDate(-100, 0, 0), time.Now())
+	if m.Birthday == nil {
+		birthday := fake.DateRange(time.Now().AddDate(-100, 0, 0), time.Now())
+		m.Birthday = &birthday
 	}
 
 	return

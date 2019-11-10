@@ -20,7 +20,7 @@ func TokenAuth(c *gin.Context) {
 
 	sig = strings.TrimPrefix(sig, "Bearer ")
 	if len(sig) < 128 {
-		handlers.Abort(c, errors.AuthTokenInvalid)
+		handlers.Abort(c, errors.AuthTokenInvalidLength)
 		return
 	}
 
@@ -36,7 +36,7 @@ func TokenAuth(c *gin.Context) {
 	elem.UserAgent = c.Request.UserAgent()
 
 	if sig != authtoken.Sign(&elem) {
-		handlers.Abort(c, errors.AuthTokenInvalid)
+		handlers.Abort(c, errors.AuthTokenInvalidSign)
 		return
 	}
 

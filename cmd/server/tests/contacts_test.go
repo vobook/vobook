@@ -5,6 +5,8 @@ import (
 	"testing"
 	"time"
 
+	"github.com/vovainside/vobook/database"
+
 	fake "github.com/brianvoe/gofakeit"
 	"github.com/davecgh/go-spew/spew"
 	"github.com/vovainside/vobook/cmd/server/requests"
@@ -22,7 +24,7 @@ func TestCreateContact(t *testing.T) {
 		Name:      fake.Name(),
 		FirstName: fake.FirstName(),
 		LastName:  fake.LastName(),
-		Birthday:  fake.DateRange(time.Now().AddDate(-100, 0, 0), time.Now()),
+		Birthday:  fake.DateRange(time.Now().AddDate(-100, 0, 0), time.Now()).Format(database.DateFormat),
 		Properties: []requests.CreateContactProperty{
 			{
 				Type:  contactpropertytype.Email,
@@ -56,7 +58,7 @@ func TestCreateContact(t *testing.T) {
 	assert.Equals(t, AuthUser.ID, resp.UserID)
 	assert.Equals(t, req.FirstName, resp.FirstName)
 	assert.Equals(t, req.LastName, resp.LastName)
-	assert.Equals(t, req.Birthday.Format(Conf.DateFormat), resp.Birthday.Format(Conf.DateFormat))
+	assert.Equals(t, req.Birthday, resp.Birthday.Format(Conf.DateFormat))
 	assert.Equals(t, len(req.Properties), len(resp.Props))
 
 	for i, v := range req.Properties {

@@ -15,7 +15,9 @@ var (
 	WrongEmailOrPassword       = New422("Wrong email or password")
 	InvalidAppClient           = New400("Invalid client")
 	AuthTokenMissing           = New401("Token missing")
-	AuthTokenInvalid           = New401("Invalid token")
+	AuthTokenInvalidLength     = New401("Invalid token (001)")
+	AuthTokenInvalidSign       = New401("Invalid token (002)")
+	AuthTokenNotFound          = New401("Invalid token (003)")
 	AuthTokenExpired           = New401("Token expired")
 	WrongPassword              = New422("Wrong password")
 	UserByEmailNotFound        = New404("User with this email not exists")
@@ -24,6 +26,7 @@ var (
 	InvalidContactPropertyType = New422("Invalid contact property type")
 	InvalidGender              = New422("Invalid gender")
 	ContactNotFound            = New404("Contact not found")
+	CreateContactNameEmpty     = New422("Contact name missing (Enter name or first name or last name)")
 )
 
 func New400(message string) error {
