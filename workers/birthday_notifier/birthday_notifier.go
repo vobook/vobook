@@ -13,14 +13,14 @@ import (
 	"github.com/vovainside/vobook/config"
 	"github.com/vovainside/vobook/database"
 	"github.com/vovainside/vobook/database/models"
-	"github.com/vovainside/vobook/domain/birthday_notification_log"
-	"github.com/vovainside/vobook/enum/contact_property_type"
+	birthdaynotificationlog "github.com/vovainside/vobook/domain/birthday_notification_log"
+	contactpropertytype "github.com/vovainside/vobook/enum/contact_property_type"
 	"github.com/vovainside/vobook/enum/gender"
 	"github.com/vovainside/vobook/utils"
 )
 
 const (
-	checkInterval = 1 * time.Hour
+	checkInterval = 1 * time.Minute / 10
 )
 
 var tbot *tb.Bot
@@ -60,13 +60,13 @@ func check() {
 	var elems []models.Contact
 	err := database.Conn().Model(&elems).
 		Join("LEFT JOIN birthday_notification_logs bnl ON bnl.contact_id=contact.id").
-		Where("bnl.created_at is null OR (extract('year', now())::text || '-' || extract('month', bnl.created_at)::text || '-' || extract('day', bnl.created_at)::text)::date - now()::date NOT IN (?)", pg.In([]int{10, 3, 0})).
-		//Where("bnl.created_at is null OR bnl.created_at::date < now()").
-		Where("contact.birthday is not null").
+		Where("bnl.created_at is NULL OR (date_part('year', now())::text || '-' || date_part('month', bnl.created_at)::text || '-' || date_part('day', bnl.created_at)::text)::date - now()::date NOT IN (?)", pg.In([]int{10, 3, 0})).
+		Where("bnl.created_at IS NULL OR bnl.created_at::date < now()").
+		Where("contact.birthday IS NOT NULL").
 		// TODO
-		// this shit is ugly oO (and probably slow on large datasets)
+		// this shit is ugly (and probably slow on large datasets)
 		// make it better if you can
-		WhereIn("(extract('year', now())::text || '-' || extract('month', birthday)::text || '-' || extract('day', birthday)::text)::date - now()::date IN (?)", []int{10, 3, 0}).
+		WhereIn("(date_part('year', now())::TEXT || '-' || date_part('month', birthday)::TEXT || '-' || date_part('day', birthday)::TEXT)::DATE - now()::DATE IN (?)", []int{10, 3, 0}).
 		Relation("Props").
 		Relation("User").
 		Select()
@@ -104,18 +104,18 @@ func sendToTelegram(c models.Contact) (err error) {
 		return
 	}
 
-	_ = buildMessage(c)
+	msg := buildMessage(c)
 
-	//user := &tb.User{
-	//	ID: c.User.TelegramID,
-	//}
+	user := &tb.User{
+		ID: c.User.TelegramID,
+	}
 
-	//_, err = tbot.Send(user, msg)
+	_, err = tbot.Send(user, msg)
 	return
 }
 
 func buildMessage(c models.Contact) (msg string) {
-	dayAt, days, age := utils.BirthdayInfo(c.Birthday)
+	dayAt, days, age := utils.BirthdayInfo(*c.Birthday)
 
 	if days == 0 {
 		msg = "Сегодня " + c.Name + " отмечает день рождения\n"

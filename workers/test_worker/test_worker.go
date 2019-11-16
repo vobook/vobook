@@ -1,3 +1,5 @@
+// This is my proof of concept for base worker
+// Worker should process some some task evert X interval
 package testworker
 
 import (
@@ -32,5 +34,5 @@ loop:
 }
 
 func work() {
-	log.Println("test working...")
+	log.Println("[test worker] hey, im working!")
 }

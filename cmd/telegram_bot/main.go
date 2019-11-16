@@ -14,7 +14,7 @@ import (
 )
 
 const (
-	userID             = 678764105
+	userID             = 0
 	checkEventInterval = time.Hour * 24
 )
 

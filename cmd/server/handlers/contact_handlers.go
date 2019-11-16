@@ -59,8 +59,12 @@ func UpdateContact(c *gin.Context) {
 	}
 
 	elem := getContactFromRequest(c)
-	req.ToModel(&elem)
-	err := contact.Update(&elem)
+	err := req.ToModel(&elem)
+	if err != nil {
+		Abort(c, err)
+		return
+	}
+	err = contact.Update(&elem)
 	if err != nil {
 		Abort(c, err)
 		return

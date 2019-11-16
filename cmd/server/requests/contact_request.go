@@ -58,18 +58,18 @@ func (r *CreateContact) ToModel() (m *models.Contact, err error) {
 }
 
 type UpdateContact struct {
-	Name       *string    `json:"name"`
-	FirstName  *string    `json:"first_name"`
-	LastName   *string    `json:"last_name"`
-	MiddleName *string    `json:"middle_name"`
-	Birthday   *time.Time `json:"birthday"`
+	Name       *string `json:"name"`
+	FirstName  *string `json:"first_name"`
+	LastName   *string `json:"last_name"`
+	MiddleName *string `json:"middle_name"`
+	Birthday   *string `json:"birthday"`
 }
 
 func (r *UpdateContact) Validate() (err error) {
 	return
 }
 
-func (r *UpdateContact) ToModel(m *models.Contact) {
+func (r *UpdateContact) ToModel(m *models.Contact) (err error) {
 	if r.Name != nil {
 		m.Name = *r.Name
 	}
@@ -82,9 +82,16 @@ func (r *UpdateContact) ToModel(m *models.Contact) {
 	if r.MiddleName != nil {
 		m.MiddleName = *r.MiddleName
 	}
-	if r.Birthday != nil {
-		m.Birthday = r.Birthday
+	if r.Birthday != nil && *r.Birthday != "" {
+		var bDayDate time.Time
+		bDayDate, err = time.Parse(config.Get().DateFormat, *r.Birthday)
+		if err != nil {
+			return
+		}
+		m.Birthday = &bDayDate
 	}
+
+	return nil
 }
 
 type SearchContact struct {
