@@ -20,7 +20,7 @@ import (
 )
 
 const (
-	checkInterval = 1 * time.Minute / 10
+	checkInterval = 1 * time.Hour
 )
 
 var tbot *tb.Bot
