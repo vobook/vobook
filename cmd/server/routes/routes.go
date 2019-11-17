@@ -45,7 +45,7 @@ func apply(rg *gin.RouterGroup, routesFn ...func(*gin.RouterGroup)) {
 
 func corsConfig() gin.HandlerFunc {
 	conf := cors.Config{
-		AllowOrigins:     []string{"http://localhost:3000"}, // TODO move to conf
+		AllowOrigins:     []string{"*"},
 		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE"},
 		AllowHeaders:     []string{"Origin", "Content-Length", "Content-Type", "X-Client", "Authorization"},
 		AllowCredentials: false,
