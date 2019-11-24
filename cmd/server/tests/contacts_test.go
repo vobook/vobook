@@ -5,12 +5,12 @@ import (
 	"testing"
 	"time"
 
-	"github.com/vovainside/vobook/database"
-
 	fake "github.com/brianvoe/gofakeit"
 	"github.com/davecgh/go-spew/spew"
 	"github.com/vovainside/vobook/cmd/server/requests"
 	"github.com/vovainside/vobook/cmd/server/responses"
+	"github.com/vovainside/vobook/config"
+	"github.com/vovainside/vobook/database"
 	"github.com/vovainside/vobook/database/factories"
 	"github.com/vovainside/vobook/database/models"
 	contactpropertytype "github.com/vovainside/vobook/enum/contact_property_type"
@@ -94,7 +94,7 @@ func TestUpdateContact(t *testing.T) {
 	firstName := fake.FirstName()
 	lastName := fake.LastName()
 	middleName := fake.LastName()
-	bday := fake.DateRange(time.Now().AddDate(-100, 0, 0), time.Now())
+	bday := fake.DateRange(time.Now().AddDate(-100, 0, 0), time.Now()).Format(config.Get().DateFormat)
 	req := requests.UpdateContact{
 		Name:       &name,
 		FirstName:  &firstName,

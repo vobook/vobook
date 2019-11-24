@@ -25,6 +25,10 @@ const (
 
 var tbot *tb.Bot
 
+// days to notify before birthday
+// todo: should be configurable
+var notifyDaysBefore = []int{10, 3, 0}
+
 func Start(exit <-chan bool) {
 	var err error
 	tbot, err = tb.NewBot(tb.Settings{
@@ -60,9 +64,10 @@ func check() {
 	var elems []models.Contact
 	err := database.Conn().Model(&elems).
 		Join("LEFT JOIN birthday_notification_logs bnl ON bnl.contact_id=contact.id").
-		Where("bnl.created_at is NULL OR (date_part('year', now())::text || '-' || date_part('month', bnl.created_at)::text || '-' || date_part('day', bnl.created_at)::text)::date - now()::date NOT IN (?)", pg.In([]int{10, 3, 0})).
+		Where("bnl.created_at is NULL OR (date_part('year', now())::text || '-' || date_part('month', bnl.created_at)::text || '-' || date_part('day', bnl.created_at)::text)::date - now()::date NOT IN (?)", pg.In(notifyDaysBefore)).
 		Where("bnl.created_at IS NULL OR bnl.created_at::date < now()").
 		Where("contact.birthday IS NOT NULL").
+		Where("contact.deleted_at IS NULL").
 		// TODO
 		// this shit is ugly (and probably slow on large datasets)
 		// make it better if you can
@@ -74,8 +79,6 @@ func check() {
 		log.Error(err)
 		return
 	}
-
-	println("Записей:", len(elems))
 
 	// send to telegram
 	var wg sync.WaitGroup

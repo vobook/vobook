@@ -15,3 +15,9 @@
 .config.yaml
 bin/mails/*
 *.log
+
+# binaries & deploy script
+bin/api_server
+bin/workers
+bin/cli
+deploy.sh

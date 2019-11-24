@@ -26,7 +26,7 @@ func hashPassword(args ...string) (err error) {
 	// TODO check for short password and warn
 	// TODO check for simple password and warn
 
-	bytes, err := bcrypt.GenerateFromPassword([]byte(password), 14)
+	bytes, err := bcrypt.GenerateFromPassword([]byte(password), 4)
 	if err != nil {
 		fmt.Println(err)
 		return
