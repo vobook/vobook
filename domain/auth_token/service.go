@@ -7,7 +7,6 @@ import (
 	"time"
 
 	"github.com/go-pg/pg"
-
 	"github.com/vovainside/vobook/cmd/server/errors"
 	"github.com/vovainside/vobook/database"
 	"github.com/vovainside/vobook/database/models"

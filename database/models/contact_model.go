@@ -8,16 +8,19 @@ import (
 )
 
 type Contact struct {
-	ID         string      `json:"id"`
-	UserID     string      `json:"user_id"`
-	Name       string      `json:"name"`
-	FirstName  string      `json:"first_name"`
-	LastName   string      `json:"last_name"`
-	MiddleName string      `json:"middle_name"`
-	Birthday   *time.Time  `json:"birthday"`
-	Gender     gender.Type `json:"gender"`
-	CreatedAt  time.Time   `json:"created_at"`
-	DeletedAt  *time.Time  `json:"deleted_at"`
+	ID         string     `json:"id"`
+	UserID     string     `json:"user_id"`
+	Name       string     `json:"name"`
+	FirstName  string     `json:"first_name"`
+	LastName   string     `json:"last_name"`
+	MiddleName string     `json:"middle_name"`
+	DOBYear    int        `json:"dob_year"`
+	DOBMonth   time.Month `json:"dob_month"`
+	DOBDay     int        `json:"dob_day"`
+
+	Gender    gender.Type `json:"gender"`
+	CreatedAt time.Time   `json:"created_at"`
+	DeletedAt *time.Time  `json:"deleted_at"`
 
 	// Relations
 	User  *User             `json:"user"`

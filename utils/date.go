@@ -57,17 +57,17 @@ func isLeap(date time.Time) bool {
 	return false
 }
 
-func BirthdayInfo(bday time.Time) (dayAt time.Time, daysLeft, currentAge int) {
-	_, mo1, d1 := bday.Date()
+func BirthdayInfo(bornAt time.Time) (nextAt time.Time, daysLeft, currentAge int) {
+	_, mo1, d1 := bornAt.Date()
 	y2, mo2, _ := time.Now().Date()
 
-	// adjust year if bday passed
+	// adjust year if birthday passed
 	if mo2 > mo1 {
 		y2++
 	}
-	dayAt = time.Date(y2, mo1, d1, 0, 0, 0, 0, bday.Location())
-	daysLeft = DaysBetween(dayAt, time.Now())
-	currentAge = Age(bday)
+	nextAt = time.Date(y2, mo1, d1, 0, 0, 0, 0, bornAt.Location())
+	daysLeft = DaysBetween(nextAt, time.Now())
+	currentAge = Age(bornAt)
 
 	return
 }

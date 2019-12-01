@@ -4,7 +4,6 @@ import (
 	"time"
 
 	"github.com/vovainside/vobook/cmd/server/errors"
-	"github.com/vovainside/vobook/config"
 	"github.com/vovainside/vobook/database/models"
 )
 
@@ -13,7 +12,9 @@ type CreateContact struct {
 	FirstName  string                  `json:"first_name"`
 	LastName   string                  `json:"last_name"`
 	MiddleName string                  `json:"middle_name"`
-	Birthday   string                  `json:"birthday"`
+	DOBYear    int                     `json:"dob_year"`
+	DOBMonth   time.Month              `json:"dob_month"`
+	DOBDay     int                     `json:"dob_day"`
 	Properties []CreateContactProperty `json:"props"`
 }
 
@@ -38,14 +39,9 @@ func (r *CreateContact) ToModel() (m *models.Contact, err error) {
 		FirstName:  r.FirstName,
 		LastName:   r.LastName,
 		MiddleName: r.MiddleName,
-	}
-	if r.Birthday != "" {
-		var bDayDate time.Time
-		bDayDate, err = time.Parse(config.Get().DateFormat, r.Birthday)
-		if err != nil {
-			return
-		}
-		m.Birthday = &bDayDate
+		DOBYear:    r.DOBYear,
+		DOBMonth:   r.DOBMonth,
+		DOBDay:     r.DOBDay,
 	}
 
 	m.Props = make([]models.ContactProperty, len(r.Properties))
@@ -58,11 +54,13 @@ func (r *CreateContact) ToModel() (m *models.Contact, err error) {
 }
 
 type UpdateContact struct {
-	Name       *string `json:"name"`
-	FirstName  *string `json:"first_name"`
-	LastName   *string `json:"last_name"`
-	MiddleName *string `json:"middle_name"`
-	Birthday   *string `json:"birthday"`
+	Name       *string     `json:"name"`
+	FirstName  *string     `json:"first_name"`
+	LastName   *string     `json:"last_name"`
+	MiddleName *string     `json:"middle_name"`
+	DOBYear    *int        `json:"dob_year"`
+	DOBMonth   *time.Month `json:"dob_month"`
+	DOBDay     *int        `json:"dob_day"`
 }
 
 func (r *UpdateContact) Validate() (err error) {
@@ -82,13 +80,14 @@ func (r *UpdateContact) ToModel(m *models.Contact) (err error) {
 	if r.MiddleName != nil {
 		m.MiddleName = *r.MiddleName
 	}
-	if r.Birthday != nil && *r.Birthday != "" {
-		var bDayDate time.Time
-		bDayDate, err = time.Parse(config.Get().DateFormat, *r.Birthday)
-		if err != nil {
-			return
-		}
-		m.Birthday = &bDayDate
+	if r.DOBYear != nil {
+		m.DOBYear = *r.DOBYear
+	}
+	if r.DOBMonth != nil {
+		m.DOBMonth = *r.DOBMonth
+	}
+	if r.DOBDay != nil {
+		m.DOBDay = *r.DOBDay
 	}
 
 	return nil

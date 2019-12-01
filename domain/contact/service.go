@@ -4,9 +4,7 @@ import (
 	"time"
 
 	"github.com/go-pg/pg"
-
 	"github.com/go-pg/pg/orm"
-
 	"github.com/vovainside/vobook/cmd/server/requests"
 	"github.com/vovainside/vobook/database"
 	"github.com/vovainside/vobook/database/filters"

@@ -5,7 +5,6 @@ import (
 	"os/signal"
 
 	log "github.com/sirupsen/logrus"
-
 	"github.com/vovainside/vobook/config"
 	"github.com/vovainside/vobook/logger"
 	"github.com/vovainside/vobook/services/mail"

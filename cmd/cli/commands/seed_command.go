@@ -3,11 +3,10 @@ package commands
 import (
 	"sync"
 
-	contactpropertytype "github.com/vovainside/vobook/enum/contact_property_type"
-
 	fake "github.com/brianvoe/gofakeit"
 	"github.com/vovainside/vobook/database/factories"
 	"github.com/vovainside/vobook/database/models"
+	contactpropertytype "github.com/vovainside/vobook/enum/contact_property_type"
 	"github.com/vovainside/vobook/utils"
 )
 

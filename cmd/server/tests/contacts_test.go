@@ -9,8 +9,6 @@ import (
 	"github.com/davecgh/go-spew/spew"
 	"github.com/vovainside/vobook/cmd/server/requests"
 	"github.com/vovainside/vobook/cmd/server/responses"
-	"github.com/vovainside/vobook/config"
-	"github.com/vovainside/vobook/database"
 	"github.com/vovainside/vobook/database/factories"
 	"github.com/vovainside/vobook/database/models"
 	contactpropertytype "github.com/vovainside/vobook/enum/contact_property_type"
@@ -24,7 +22,9 @@ func TestCreateContact(t *testing.T) {
 		Name:      fake.Name(),
 		FirstName: fake.FirstName(),
 		LastName:  fake.LastName(),
-		Birthday:  fake.DateRange(time.Now().AddDate(-100, 0, 0), time.Now()).Format(database.DateFormat),
+		DOBYear:   fake.Year(),
+		DOBMonth:  time.Month(fake.Number(1, 12)),
+		DOBDay:    fake.Day(),
 		Properties: []requests.CreateContactProperty{
 			{
 				Type:  contactpropertytype.Email,
@@ -58,7 +58,9 @@ func TestCreateContact(t *testing.T) {
 	assert.Equals(t, AuthUser.ID, resp.UserID)
 	assert.Equals(t, req.FirstName, resp.FirstName)
 	assert.Equals(t, req.LastName, resp.LastName)
-	assert.Equals(t, req.Birthday, resp.Birthday.Format(Conf.DateFormat))
+	assert.Equals(t, req.DOBYear, resp.DOBYear)
+	assert.Equals(t, req.DOBMonth, resp.DOBMonth)
+	assert.Equals(t, req.DOBDay, resp.DOBDay)
 	assert.Equals(t, len(req.Properties), len(resp.Props))
 
 	for i, v := range req.Properties {
@@ -73,6 +75,9 @@ func TestCreateContact(t *testing.T) {
 		"user_id":    AuthUser.ID,
 		"first_name": req.FirstName,
 		"last_name":  req.LastName,
+		"dob_year":   req.DOBYear,
+		"dob_month":  req.DOBMonth,
+		"dob_day":    req.DOBDay,
 	})
 
 	for _, v := range req.Properties {
@@ -94,13 +99,17 @@ func TestUpdateContact(t *testing.T) {
 	firstName := fake.FirstName()
 	lastName := fake.LastName()
 	middleName := fake.LastName()
-	bday := fake.DateRange(time.Now().AddDate(-100, 0, 0), time.Now()).Format(config.Get().DateFormat)
+	dobYear := fake.Year()
+	dobMonth := time.Month(fake.Number(1, 12))
+	dobDay := fake.Day()
 	req := requests.UpdateContact{
 		Name:       &name,
 		FirstName:  &firstName,
 		LastName:   &lastName,
 		MiddleName: &middleName,
-		Birthday:   &bday,
+		DOBYear:    &dobYear,
+		DOBMonth:   &dobMonth,
+		DOBDay:     &dobDay,
 	}
 
 	var resp responses.Success
@@ -112,6 +121,9 @@ func TestUpdateContact(t *testing.T) {
 		"first_name":  firstName,
 		"last_name":   lastName,
 		"middle_name": middleName,
+		"dob_year":    dobYear,
+		"dob_month":   dobMonth,
+		"dob_day":     dobDay,
 	})
 }
 
