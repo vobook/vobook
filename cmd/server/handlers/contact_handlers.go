@@ -3,6 +3,8 @@ package handlers
 import (
 	"net/http"
 
+	contactproperty "github.com/vovainside/vobook/domain/contact_property"
+
 	"github.com/gin-gonic/gin"
 
 	"github.com/vovainside/vobook/cmd/server/requests"
@@ -68,6 +70,22 @@ func UpdateContact(c *gin.Context) {
 	if err != nil {
 		Abort(c, err)
 		return
+	}
+
+	if len(elem.Props) > 0 {
+		err = contactproperty.DeleteByContact(elem.ID)
+		if err != nil {
+			Abort(c, err)
+			return
+		}
+		for i := range elem.Props {
+			elem.Props[i].ContactID = elem.ID
+		}
+		err = contactproperty.CreateMany(&elem.Props)
+		if err != nil {
+			Abort(c, err)
+			return
+		}
 	}
 
 	c.JSON(http.StatusOK, responses.OK("Saved"))

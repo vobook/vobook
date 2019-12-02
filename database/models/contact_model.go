@@ -18,6 +18,8 @@ type Contact struct {
 	DOBMonth   time.Month `json:"dob_month"`
 	DOBDay     int        `json:"dob_day"`
 
+	NextBirthday string `json:"next_birthday" sql:"-"`
+
 	Gender    gender.Type `json:"gender"`
 	CreatedAt time.Time   `json:"created_at"`
 	DeletedAt *time.Time  `json:"deleted_at"`

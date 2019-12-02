@@ -29,9 +29,14 @@ func Create(m *models.Contact) (err error) {
 }
 
 func Search(userID string, req requests.SearchContact) (data []models.Contact, count int, err error) {
-	q := database.ORM().Model(&data)
-	q.Apply(filters.PageFilter(req.Page, req.Limit))
-	q.Apply(filters.TrashedFilter(req.Trashed, "contact"))
+	q := database.ORM().Model(&data).
+		Column("contact.*").
+		ColumnExpr(`((CASE
+	WHEN (date_part('year', now())::TEXT || '-' || dob_month::TEXT || '-' || dob_day::TEXT)::DATE < now()::DATE
+	THEN (date_part('year', now())::INT + 1)::TEXT
+	ELSE date_part('year', now())::TEXT END)::TEXT || '-' || dob_month::TEXT || '-' || dob_day::TEXT)::DATE AS next_birthday`).
+		Apply(filters.PageFilter(req.Page, req.Limit)).
+		Apply(filters.TrashedFilter(req.Trashed, "contact"))
 
 	q.Where("user_id = ?", userID)
 
@@ -44,13 +49,15 @@ func Search(userID string, req requests.SearchContact) (data []models.Contact, c
 			q.WhereOr("cp.value ilike ?", "%"+req.Query+"%")
 			return q, nil
 		})
+	} else {
+		q.Where("dob_month <> 0 AND dob_day <> 0")
+		q.OrderExpr("next_birthday")
 	}
 	q.Relation("Props", func(q *orm.Query) (*orm.Query, error) {
 		q.Order("order ASC")
 		return q, nil
 	})
 
-	q.Order("contact.created_at DESC")
 	count, err = q.SelectAndCount()
 	return
 }

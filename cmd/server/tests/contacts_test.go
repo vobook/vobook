@@ -110,6 +110,16 @@ func TestUpdateContact(t *testing.T) {
 		DOBYear:    &dobYear,
 		DOBMonth:   &dobMonth,
 		DOBDay:     &dobDay,
+		Properties: []requests.CreateContactProperty{
+			{
+				Type:  contactpropertytype.Email,
+				Value: fake.Email(),
+			},
+			{
+				Type:  contactpropertytype.Phone,
+				Value: fake.PhoneFormatted(),
+			},
+		},
 	}
 
 	var resp responses.Success
@@ -124,6 +134,17 @@ func TestUpdateContact(t *testing.T) {
 		"dob_year":    dobYear,
 		"dob_month":   dobMonth,
 		"dob_day":     dobDay,
+	})
+
+	assert.DatabaseHas(t, "contact_properties", utils.M{
+		"contact_id": elem.ID,
+		"type":       contactpropertytype.Email,
+		"value":      req.Properties[0].Value,
+	})
+	assert.DatabaseHas(t, "contact_properties", utils.M{
+		"contact_id": elem.ID,
+		"type":       contactpropertytype.Phone,
+		"value":      req.Properties[1].Value,
 	})
 }
 
@@ -242,7 +263,11 @@ func TestGetContact(t *testing.T) {
 
 func TestSearchContact(t *testing.T) {
 	ReLogin(t)
-	elem, err := factories.CreateContact(models.Contact{UserID: AuthUser.ID})
+	elem, err := factories.CreateContact(models.Contact{
+		UserID:   AuthUser.ID,
+		DOBMonth: 1,
+		DOBDay:   1,
+	})
 	assert.NotError(t, err)
 
 	props := make([]models.ContactProperty, 3)
@@ -256,11 +281,20 @@ func TestSearchContact(t *testing.T) {
 		props[i] = prop
 	}
 
-	_, err = factories.CreateContact(models.Contact{UserID: AuthUser.ID})
+	_, err = factories.CreateContact(models.Contact{
+		UserID:   AuthUser.ID,
+		DOBMonth: 1,
+		DOBDay:   1,
+	})
 	assert.NotError(t, err)
 
 	deletedAt := time.Now()
-	elem3, err := factories.CreateContact(models.Contact{UserID: AuthUser.ID, DeletedAt: &deletedAt})
+	elem3, err := factories.CreateContact(models.Contact{
+		UserID:    AuthUser.ID,
+		DeletedAt: &deletedAt,
+		DOBMonth:  1,
+		DOBDay:    1,
+	})
 	assert.NotError(t, err)
 
 	// should get 2 contacts

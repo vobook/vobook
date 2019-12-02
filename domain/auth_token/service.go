@@ -42,7 +42,6 @@ func Sign(elem *models.AuthToken) string {
 		elem.UserID,
 		fmt.Sprintf("%d", elem.ClientID),
 		elem.UserAgent,
-		elem.ClientIP,
 		elem.Token,
 		elem.CreatedAt.UTC().Format(time.RFC3339),
 		elem.ExpiresAt.UTC().Format(time.RFC3339),

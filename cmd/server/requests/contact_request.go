@@ -54,13 +54,14 @@ func (r *CreateContact) ToModel() (m *models.Contact, err error) {
 }
 
 type UpdateContact struct {
-	Name       *string     `json:"name"`
-	FirstName  *string     `json:"first_name"`
-	LastName   *string     `json:"last_name"`
-	MiddleName *string     `json:"middle_name"`
-	DOBYear    *int        `json:"dob_year"`
-	DOBMonth   *time.Month `json:"dob_month"`
-	DOBDay     *int        `json:"dob_day"`
+	Name       *string                 `json:"name"`
+	FirstName  *string                 `json:"first_name"`
+	LastName   *string                 `json:"last_name"`
+	MiddleName *string                 `json:"middle_name"`
+	DOBYear    *int                    `json:"dob_year"`
+	DOBMonth   *time.Month             `json:"dob_month"`
+	DOBDay     *int                    `json:"dob_day"`
+	Properties []CreateContactProperty `json:"props"`
 }
 
 func (r *UpdateContact) Validate() (err error) {
@@ -88,6 +89,12 @@ func (r *UpdateContact) ToModel(m *models.Contact) (err error) {
 	}
 	if r.DOBDay != nil {
 		m.DOBDay = *r.DOBDay
+	}
+
+	m.Props = make([]models.ContactProperty, len(r.Properties))
+	for i, v := range r.Properties {
+		m.Props[i] = v.ToModel()
+		m.Props[i].Order = i + 1
 	}
 
 	return nil

@@ -62,6 +62,13 @@ func Delete(userID string, ids ...string) (err error) {
 	return
 }
 
+func DeleteByContact(contactID string) (err error) {
+	_, err = database.ORM().Exec(
+		"DELETE FROM contact_properties WHERE contact_id=?", contactID)
+
+	return
+}
+
 func Reorder(userID string, ids []string) (err error) {
 	for i, id := range ids {
 		_, err = database.ORM().Exec(
