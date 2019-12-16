@@ -40,15 +40,18 @@ func Search(userID string, req requests.SearchContact) (data []models.Contact, c
 
 	q.Where("user_id = ?", userID)
 
-	if len(req.Query) > 2 {
+	if req.Query != "" {
 		q.WhereGroup(func(q *orm.Query) (*orm.Query, error) {
-			q.Join("JOIN contact_properties cp ON cp.contact_id=contact.id")
-			q.WhereOr("first_name ilike ?", "%"+req.Query+"%")
-			q.WhereOr("last_name ilike ?", "%"+req.Query+"%")
-			q.WhereOr("contact.name ilike ?", "%"+req.Query+"%")
-			q.WhereOr("cp.value ilike ?", "%"+req.Query+"%")
+			q.Join("JOIN contact_properties cp ON cp.contact_id=contact.id").
+				WhereOr("first_name ilike ?", "%"+req.Query+"%").
+				WhereOr("last_name ilike ?", "%"+req.Query+"%").
+				WhereOr("contact.name ilike ?", "%"+req.Query+"%").
+				WhereOr("cp.value ilike ?", "%"+req.Query+"%")
+
 			return q, nil
-		})
+		}).
+			Group("contact.id")
+
 	} else {
 		q.Where("dob_month <> 0 AND dob_day <> 0")
 		q.OrderExpr("next_birthday")
