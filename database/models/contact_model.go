@@ -4,7 +4,7 @@ import (
 	"context"
 	"time"
 
-	"github.com/vovainside/vobook/enum/gender"
+	"vobook/enum/gender"
 )
 
 type Contact struct {

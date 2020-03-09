@@ -5,8 +5,8 @@ import (
 
 	fake "github.com/brianvoe/gofakeit"
 
-	"github.com/vovainside/vobook/database"
-	"github.com/vovainside/vobook/database/models"
+	"vobook/database"
+	"vobook/database/models"
 )
 
 func MakeContact(mOpt ...models.Contact) (m models.Contact, err error) {

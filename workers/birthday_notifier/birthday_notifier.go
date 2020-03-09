@@ -6,16 +6,17 @@ import (
 	"sync"
 	"time"
 
-	"github.com/go-pg/pg"
+	"github.com/go-pg/pg/v9"
+
+	"vobook/config"
+	"vobook/database"
+	"vobook/database/models"
+	birthdaynotificationlog "vobook/domain/birthday_notification_log"
+	contactpropertytype "vobook/enum/contact_property_type"
+	"vobook/enum/gender"
+	"vobook/utils"
 
 	log "github.com/sirupsen/logrus"
-	"github.com/vovainside/vobook/config"
-	"github.com/vovainside/vobook/database"
-	"github.com/vovainside/vobook/database/models"
-	birthdaynotificationlog "github.com/vovainside/vobook/domain/birthday_notification_log"
-	contactpropertytype "github.com/vovainside/vobook/enum/contact_property_type"
-	"github.com/vovainside/vobook/enum/gender"
-	"github.com/vovainside/vobook/utils"
 	tb "gopkg.in/tucnak/telebot.v2"
 )
 

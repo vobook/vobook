@@ -4,12 +4,13 @@ import (
 	"net/http"
 	"time"
 
+	"vobook/cmd/server/errors"
+	"vobook/cmd/server/responses"
+	"vobook/config"
+	emailverification "vobook/domain/email_verification"
+	"vobook/domain/user"
+
 	"github.com/gin-gonic/gin"
-	"github.com/vovainside/vobook/cmd/server/errors"
-	"github.com/vovainside/vobook/cmd/server/responses"
-	"github.com/vovainside/vobook/config"
-	emailverification "github.com/vovainside/vobook/domain/email_verification"
-	"github.com/vovainside/vobook/domain/user"
 )
 
 func VerifyEmail(c *gin.Context) {

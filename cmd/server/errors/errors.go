@@ -3,7 +3,7 @@ package errors
 import (
 	"net/http"
 
-	"github.com/vovainside/vobook/config"
+	"vobook/config"
 )
 
 var (

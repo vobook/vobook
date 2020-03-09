@@ -1,7 +1,7 @@
 package workers
 
 import (
-	birthdaynotifier "github.com/vovainside/vobook/workers/birthday_notifier"
+	birthdaynotifier "vobook/workers/birthday_notifier"
 )
 
 func Start(exit <-chan bool) {

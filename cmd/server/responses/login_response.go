@@ -3,7 +3,7 @@ package responses
 import (
 	"time"
 
-	"github.com/vovainside/vobook/database/models"
+	"vobook/database/models"
 )
 
 type Login struct {

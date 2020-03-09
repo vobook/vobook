@@ -3,8 +3,8 @@ package routes
 import (
 	"github.com/gin-gonic/gin"
 
-	"github.com/vovainside/vobook/cmd/server/handlers"
-	"github.com/vovainside/vobook/cmd/server/middlewares"
+	"vobook/cmd/server/handlers"
+	"vobook/cmd/server/middlewares"
 )
 
 func contactRoutes(r *gin.RouterGroup) {

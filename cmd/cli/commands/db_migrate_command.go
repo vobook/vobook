@@ -3,8 +3,8 @@ package commands
 import (
 	"fmt"
 
-	"github.com/vovainside/vobook/database"
-	"github.com/vovainside/vobook/database/migrations"
+	"vobook/database"
+	"vobook/database/migrations"
 )
 
 func init() {

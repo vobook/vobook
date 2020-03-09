@@ -5,12 +5,12 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/go-pg/pg"
+	"github.com/go-pg/pg/v9"
 	ta "github.com/stretchr/testify/assert"
 
-	"github.com/vovainside/vobook/database"
-	"github.com/vovainside/vobook/services/fs"
-	"github.com/vovainside/vobook/utils"
+	"vobook/database"
+	"vobook/services/fs"
+	"vobook/utils"
 )
 
 type NotNilT bool

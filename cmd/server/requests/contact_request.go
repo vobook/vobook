@@ -3,8 +3,8 @@ package requests
 import (
 	"time"
 
-	"github.com/vovainside/vobook/cmd/server/errors"
-	"github.com/vovainside/vobook/database/models"
+	"vobook/cmd/server/errors"
+	"vobook/database/models"
 )
 
 type CreateContact struct {

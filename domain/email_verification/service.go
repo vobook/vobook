@@ -1,11 +1,12 @@
 package emailverification
 
 import (
-	"github.com/go-pg/pg"
-	"github.com/vovainside/vobook/cmd/server/errors"
-	"github.com/vovainside/vobook/database"
-	"github.com/vovainside/vobook/database/models"
-	"github.com/vovainside/vobook/utils"
+	"vobook/cmd/server/errors"
+	"vobook/database"
+	"vobook/database/models"
+	"vobook/utils"
+
+	"github.com/go-pg/pg/v9"
 )
 
 func Create(userID, email string) (elem *models.EmailVerification, err error) {

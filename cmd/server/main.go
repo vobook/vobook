@@ -6,11 +6,12 @@ import (
 	"os"
 	"os/signal"
 
+	"vobook/cmd/server/routes"
+	"vobook/config"
+	"vobook/logger"
+	"vobook/services/mail"
+
 	"github.com/gin-gonic/gin"
-	"github.com/vovainside/vobook/cmd/server/routes"
-	"github.com/vovainside/vobook/config"
-	"github.com/vovainside/vobook/logger"
-	"github.com/vovainside/vobook/services/mail"
 )
 
 func main() {

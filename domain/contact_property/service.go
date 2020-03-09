@@ -1,10 +1,10 @@
 package contactproperty
 
 import (
-	"github.com/go-pg/pg"
+	"github.com/go-pg/pg/v9"
 
-	"github.com/vovainside/vobook/database"
-	"github.com/vovainside/vobook/database/models"
+	"vobook/database"
+	"vobook/database/models"
 )
 
 func CreateMany(elems *[]models.ContactProperty) (err error) {

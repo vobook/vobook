@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"math/rand"
 
-	"github.com/vovainside/vobook/cmd/server/errors"
+	"vobook/cmd/server/errors"
 )
 
 type Type int

@@ -5,13 +5,13 @@ import (
 	"runtime/debug"
 
 	"github.com/gin-gonic/gin"
-	"github.com/go-pg/pg"
+	"github.com/go-pg/pg/v9"
 	log "github.com/sirupsen/logrus"
 
-	"github.com/vovainside/vobook/cmd/server/errors"
-	"github.com/vovainside/vobook/cmd/server/responses"
-	"github.com/vovainside/vobook/config"
-	"github.com/vovainside/vobook/database/models"
+	"vobook/cmd/server/errors"
+	"vobook/cmd/server/responses"
+	"vobook/config"
+	"vobook/database/models"
 )
 
 type Validatable interface {

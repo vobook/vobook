@@ -3,11 +3,11 @@ package user
 import (
 	"time"
 
-	"github.com/go-pg/pg"
+	"github.com/go-pg/pg/v9"
 
-	"github.com/vovainside/vobook/cmd/server/errors"
-	"github.com/vovainside/vobook/database"
-	"github.com/vovainside/vobook/database/models"
+	"vobook/cmd/server/errors"
+	"vobook/database"
+	"vobook/database/models"
 )
 
 func Create(elem *models.User) (err error) {

@@ -11,7 +11,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/vovainside/vobook/config"
+	"vobook/config"
 )
 
 type FileType uint8

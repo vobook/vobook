@@ -12,18 +12,18 @@ import (
 	"testing"
 
 	"github.com/gin-gonic/gin"
-	"github.com/go-pg/pg/orm"
+	"github.com/go-pg/pg/v9/orm"
 
-	"github.com/vovainside/vobook/cmd/server/routes"
-	"github.com/vovainside/vobook/config"
-	"github.com/vovainside/vobook/database"
-	"github.com/vovainside/vobook/database/factories"
-	"github.com/vovainside/vobook/database/models"
-	authtoken "github.com/vovainside/vobook/domain/auth_token"
-	"github.com/vovainside/vobook/logger"
-	"github.com/vovainside/vobook/services/mail"
-	"github.com/vovainside/vobook/tests/assert"
-	"github.com/vovainside/vobook/utils"
+	"vobook/cmd/server/routes"
+	"vobook/config"
+	"vobook/database"
+	"vobook/database/factories"
+	"vobook/database/models"
+	authtoken "vobook/domain/auth_token"
+	"vobook/logger"
+	"vobook/services/mail"
+	"vobook/tests/assert"
+	"vobook/utils"
 )
 
 var (

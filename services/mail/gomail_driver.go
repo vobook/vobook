@@ -3,7 +3,8 @@ package mail
 import (
 	"crypto/tls"
 
-	"github.com/vovainside/vobook/config"
+	"vobook/config"
+
 	"gopkg.in/gomail.v2"
 )
 

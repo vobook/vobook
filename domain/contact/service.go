@@ -3,13 +3,14 @@ package contact
 import (
 	"time"
 
-	"github.com/go-pg/pg"
-	"github.com/go-pg/pg/orm"
-	"github.com/vovainside/vobook/cmd/server/requests"
-	"github.com/vovainside/vobook/database"
-	"github.com/vovainside/vobook/database/filters"
-	"github.com/vovainside/vobook/database/models"
-	contactproperty "github.com/vovainside/vobook/domain/contact_property"
+	"vobook/cmd/server/requests"
+	"vobook/database"
+	"vobook/database/filters"
+	"vobook/database/models"
+	contactproperty "vobook/domain/contact_property"
+
+	"github.com/go-pg/pg/v9"
+	"github.com/go-pg/pg/v9/orm"
 )
 
 func Create(m *models.Contact) (err error) {

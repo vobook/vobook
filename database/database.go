@@ -3,11 +3,11 @@ package database
 import (
 	"context"
 
-	"github.com/go-pg/pg"
-	"github.com/go-pg/pg/orm"
+	"github.com/go-pg/pg/v9"
+	"github.com/go-pg/pg/v9/orm"
 	_ "github.com/lib/pq"
 
-	"github.com/vovainside/vobook/config"
+	"vobook/config"
 )
 
 const (

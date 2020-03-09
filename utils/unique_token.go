@@ -5,8 +5,9 @@ import (
 	"fmt"
 	"math/rand"
 
-	"github.com/go-pg/pg"
-	"github.com/vovainside/vobook/database"
+	"vobook/database"
+
+	"github.com/go-pg/pg/v9"
 )
 
 const (

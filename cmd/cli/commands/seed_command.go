@@ -3,11 +3,12 @@ package commands
 import (
 	"sync"
 
+	"vobook/database/factories"
+	"vobook/database/models"
+	contactpropertytype "vobook/enum/contact_property_type"
+	"vobook/utils"
+
 	fake "github.com/brianvoe/gofakeit"
-	"github.com/vovainside/vobook/database/factories"
-	"github.com/vovainside/vobook/database/models"
-	contactpropertytype "github.com/vovainside/vobook/enum/contact_property_type"
-	"github.com/vovainside/vobook/utils"
 )
 
 func init() {

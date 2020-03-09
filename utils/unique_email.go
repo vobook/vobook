@@ -3,9 +3,10 @@ package utils
 import (
 	"strings"
 
+	"vobook/database"
+
 	fake "github.com/brianvoe/gofakeit"
-	"github.com/go-pg/pg"
-	"github.com/vovainside/vobook/database"
+	"github.com/go-pg/pg/v9"
 )
 
 // UniqueEmail creates random unique email for given table & column

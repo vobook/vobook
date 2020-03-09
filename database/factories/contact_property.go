@@ -3,9 +3,9 @@ package factories
 import (
 	fake "github.com/brianvoe/gofakeit"
 
-	"github.com/vovainside/vobook/database"
-	"github.com/vovainside/vobook/database/models"
-	"github.com/vovainside/vobook/enum/contact_property_type"
+	"vobook/database"
+	"vobook/database/models"
+	contactpropertytype "vobook/enum/contact_property_type"
 )
 
 func MakeContactProperty(mOpt ...models.ContactProperty) (m models.ContactProperty, err error) {
