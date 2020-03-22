@@ -5,13 +5,13 @@ import (
 	"runtime/debug"
 
 	"github.com/gin-gonic/gin"
-	"github.com/go-pg/pg"
+	"github.com/go-pg/pg/v9"
 	log "github.com/sirupsen/logrus"
 
-	"github.com/vovainside/vobook/cmd/server/errors"
-	"github.com/vovainside/vobook/cmd/server/responses"
-	"github.com/vovainside/vobook/config"
-	"github.com/vovainside/vobook/database/models"
+	"vobook/cmd/server/errors"
+	"vobook/cmd/server/responses"
+	"vobook/config"
+	"vobook/database/models"
 )
 
 type Validatable interface {
@@ -27,30 +27,31 @@ func abort422(c *gin.Context, err error) {
 }
 
 func Abort(c *gin.Context, err error) {
-	e, ok := err.(errors.Error)
-	if !ok {
-		e = errors.Error{
-			Message: err.Error(),
-			Err:     err,
-		}
+	resp := responses.Error{}
+	code := http.StatusInternalServerError
+
+	switch err.(type) {
+	case errors.Error:
+		e := err.(errors.Error)
+		code = e.Code
+		resp.Error = e.Error()
+	case errors.List:
+		resp.Errors = err.(errors.List)
+	case errors.Input:
+		resp.InputErrors = err.(errors.Input)
+	default:
+		resp.Error = err.Error()
 		switch err {
 		case pg.ErrNoRows:
-			e.Code = http.StatusNotFound
-			e.Message = "not found"
-		default:
-			e.Code = http.StatusInternalServerError
+			code = http.StatusNotFound
 		}
-	}
-
-	resp := responses.Error{
-		Error: e.Error(),
 	}
 
 	if !config.IsReleaseEnv() {
 		log.Println(string(debug.Stack()))
 	}
 
-	c.AbortWithStatusJSON(e.Code, resp)
+	c.AbortWithStatusJSON(code, resp)
 }
 
 func bindJSON(c *gin.Context, req Validatable) (ok bool) {

@@ -7,8 +7,9 @@ import (
 	"io/ioutil"
 	"path"
 
+	"vobook/config"
+
 	log "github.com/sirupsen/logrus"
-	"github.com/vovainside/vobook/config"
 	"gopkg.in/yaml.v3"
 )
 

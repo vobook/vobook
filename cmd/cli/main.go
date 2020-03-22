@@ -6,7 +6,7 @@ import (
 	"os"
 	"strings"
 
-	"github.com/vovainside/vobook/cmd/cli/commands"
+	"vobook/cmd/cli/commands"
 )
 
 const usageText = `

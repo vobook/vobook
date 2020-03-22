@@ -7,8 +7,9 @@ import (
 	"path"
 	"sync"
 
+	"vobook/config"
+
 	"github.com/davecgh/go-spew/spew"
-	"github.com/vovainside/vobook/config"
 )
 
 func NewTestDriver() Driver {

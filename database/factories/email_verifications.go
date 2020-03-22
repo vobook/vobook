@@ -1,9 +1,9 @@
 package factories
 
 import (
-	"github.com/vovainside/vobook/database"
-	"github.com/vovainside/vobook/database/models"
-	"github.com/vovainside/vobook/utils"
+	"vobook/database"
+	"vobook/database/models"
+	"vobook/utils"
 )
 
 func MakeEmailVerification() (m models.EmailVerification, err error) {

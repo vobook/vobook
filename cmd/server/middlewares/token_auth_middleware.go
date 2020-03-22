@@ -4,11 +4,12 @@ import (
 	"strings"
 	"time"
 
+	"vobook/cmd/server/errors"
+	"vobook/cmd/server/handlers"
+	"vobook/database/models"
+	authtoken "vobook/domain/auth_token"
+
 	"github.com/gin-gonic/gin"
-	"github.com/vovainside/vobook/cmd/server/errors"
-	"github.com/vovainside/vobook/cmd/server/handlers"
-	"github.com/vovainside/vobook/database/models"
-	authtoken "github.com/vovainside/vobook/domain/auth_token"
 )
 
 func TokenAuth(c *gin.Context) {

@@ -4,10 +4,11 @@ import (
 	"net/http"
 	"time"
 
+	"vobook/cmd/server/middlewares"
+	"vobook/config"
+
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
-	"github.com/vovainside/vobook/cmd/server/middlewares"
-	"github.com/vovainside/vobook/config"
 )
 
 func Register(r *gin.Engine) {

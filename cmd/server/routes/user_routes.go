@@ -1,8 +1,9 @@
 package routes
 
 import (
+	"vobook/cmd/server/handlers"
+
 	"github.com/gin-gonic/gin"
-	"github.com/vovainside/vobook/cmd/server/handlers"
 )
 
 func userRoutes(r *gin.RouterGroup) {

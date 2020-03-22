@@ -7,9 +7,10 @@ import (
 	"reflect"
 	"time"
 
-	"github.com/go-pg/pg"
-	"github.com/go-pg/pg/orm"
-	"github.com/vovainside/vobook/database"
+	"vobook/database"
+
+	"github.com/go-pg/pg/v9"
+	"github.com/go-pg/pg/v9/orm"
 )
 
 type command struct {

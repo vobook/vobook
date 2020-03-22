@@ -6,18 +6,18 @@ import (
 
 	fake "github.com/brianvoe/gofakeit"
 
-	"github.com/vovainside/vobook/cmd/server/errors"
-	"github.com/vovainside/vobook/cmd/server/requests"
-	"github.com/vovainside/vobook/cmd/server/responses"
-	"github.com/vovainside/vobook/config"
-	"github.com/vovainside/vobook/database"
-	"github.com/vovainside/vobook/database/factories"
-	"github.com/vovainside/vobook/database/models"
-	"github.com/vovainside/vobook/domain/user"
-	"github.com/vovainside/vobook/services/mail"
-	. "github.com/vovainside/vobook/tests/apitest"
-	"github.com/vovainside/vobook/tests/assert"
-	"github.com/vovainside/vobook/utils"
+	"vobook/cmd/server/errors"
+	"vobook/cmd/server/requests"
+	"vobook/cmd/server/responses"
+	"vobook/config"
+	"vobook/database"
+	"vobook/database/factories"
+	"vobook/database/models"
+	"vobook/domain/user"
+	"vobook/services/mail"
+	. "vobook/tests/apitest"
+	"vobook/tests/assert"
+	"vobook/utils"
 )
 
 func TestRegisterUser(t *testing.T) {

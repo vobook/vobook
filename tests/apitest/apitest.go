@@ -12,18 +12,18 @@ import (
 	"testing"
 
 	"github.com/gin-gonic/gin"
-	"github.com/go-pg/pg/orm"
+	"github.com/go-pg/pg/v9/orm"
 
-	"github.com/vovainside/vobook/cmd/server/routes"
-	"github.com/vovainside/vobook/config"
-	"github.com/vovainside/vobook/database"
-	"github.com/vovainside/vobook/database/factories"
-	"github.com/vovainside/vobook/database/models"
-	authtoken "github.com/vovainside/vobook/domain/auth_token"
-	"github.com/vovainside/vobook/logger"
-	"github.com/vovainside/vobook/services/mail"
-	"github.com/vovainside/vobook/tests/assert"
-	"github.com/vovainside/vobook/utils"
+	"vobook/cmd/server/routes"
+	"vobook/config"
+	"vobook/database"
+	"vobook/database/factories"
+	"vobook/database/models"
+	authtoken "vobook/domain/auth_token"
+	"vobook/logger"
+	"vobook/services/mail"
+	"vobook/tests/assert"
+	"vobook/utils"
 )
 
 var (
@@ -46,6 +46,8 @@ type Request struct {
 	AssertStatus int
 	IsPublic     bool
 }
+
+const ContentTypeJSON = "application/json"
 
 func init() {
 	// changing working dir to vobook/bin
@@ -84,8 +86,8 @@ func makeRequest(t *testing.T, r Request) *httptest.ResponseRecorder {
 	)
 	assert.NotError(t, err)
 	t.Log(fmt.Sprintf("[%d] %s %s", r.AssertStatus, r.method, r.Path))
-	req.Header.Set("Content-Type", "application/json")
-	req.Header.Set("Accept", "application/json")
+	req.Header.Set("Content-Type", ContentTypeJSON)
+	req.Header.Set("Accept", ContentTypeJSON)
 	req.Header.Set("X-Client", "1")
 
 	for k, v := range r.Headers {
@@ -141,10 +143,12 @@ func TestRequest(t *testing.T, req Request) *httptest.ResponseRecorder {
 		t.FailNow()
 	}
 
-	err = json.Unmarshal(resp.Body.Bytes(), &req.BindResponse)
-	if err != nil {
-		t.Log(resp.Body.String())
-		t.Fatal(err)
+	if responseContentType(resp) == ContentTypeJSON {
+		err = json.Unmarshal(resp.Body.Bytes(), &req.BindResponse)
+		if err != nil {
+			t.Log(resp.Body.String())
+			t.Fatal(err)
+		}
 	}
 
 	return resp
@@ -159,6 +163,16 @@ func Login(t *testing.T) *models.User {
 	LoginAs(t, &user)
 
 	return &user
+}
+
+func responseContentType(resp *httptest.ResponseRecorder) string {
+	ct, ok := resp.Header()["Content-Type"]
+	if !ok || len(ct) == 0 {
+		return ""
+	}
+
+	frags := strings.Split(ct[0], ";")
+	return frags[0]
 }
 
 func User(t *testing.T) *models.User {
@@ -257,8 +271,8 @@ func Patch(t *testing.T, path string, body, response interface{}) *httptest.Resp
 	return PATCH(t, req)
 }
 
-// Delete makes "delete" request
-func Delete(t *testing.T, path string, response interface{}) *httptest.ResponseRecorder {
+// TestDelete makes "delete" request
+func TestDelete(t *testing.T, path string, response interface{}) *httptest.ResponseRecorder {
 	req := Request{
 		Path:         path,
 		BindResponse: response,
@@ -268,8 +282,8 @@ func Delete(t *testing.T, path string, response interface{}) *httptest.ResponseR
 	return DELETE(t, req)
 }
 
-// Fetch makes simple "get" request
-func Fetch(t *testing.T, path string, response interface{}) *httptest.ResponseRecorder {
+// TestGet makes simple "get" request
+func TestGet(t *testing.T, path string, response interface{}) *httptest.ResponseRecorder {
 	req := Request{
 		Path:         path,
 		BindResponse: response,

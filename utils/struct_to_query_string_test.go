@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/vovainside/vobook/tests/assert"
-	"github.com/vovainside/vobook/utils"
+	"vobook/tests/assert"
+	"vobook/utils"
 )
 
 func TestStructToQueryString(t *testing.T) {

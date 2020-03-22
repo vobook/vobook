@@ -4,15 +4,16 @@ import (
 	"testing"
 	"time"
 
+	"vobook/cmd/server/requests"
+	"vobook/cmd/server/responses"
+	"vobook/database/factories"
+	"vobook/database/models"
+	contactpropertytype "vobook/enum/contact_property_type"
+	. "vobook/tests/apitest"
+	"vobook/tests/assert"
+	"vobook/utils"
+
 	fake "github.com/brianvoe/gofakeit"
-	"github.com/vovainside/vobook/cmd/server/requests"
-	"github.com/vovainside/vobook/cmd/server/responses"
-	"github.com/vovainside/vobook/database/factories"
-	"github.com/vovainside/vobook/database/models"
-	contactpropertytype "github.com/vovainside/vobook/enum/contact_property_type"
-	. "github.com/vovainside/vobook/tests/apitest"
-	"github.com/vovainside/vobook/tests/assert"
-	"github.com/vovainside/vobook/utils"
 )
 
 func TestUpdateContactProperty(t *testing.T) {
@@ -194,7 +195,6 @@ func TestGetContactPropertyTypes(t *testing.T) {
 	Login(t)
 
 	var resp []contactpropertytype.TypeModel
-	Fetch(t, "contact-property-types", &resp)
-
+	TestGet(t, "contact-property-types", &resp)
 	assert.Equals(t, len(contactpropertytype.All), len(resp))
 }

@@ -2,16 +2,16 @@ package contact
 
 import (
 	"time"
+	"vobook/domain/file"
 
-	"github.com/go-pg/pg"
+	"vobook/cmd/server/requests"
+	"vobook/database"
+	"vobook/database/filters"
+	"vobook/database/models"
+	contactproperty "vobook/domain/contact_property"
 
-	"github.com/go-pg/pg/orm"
-
-	"github.com/vovainside/vobook/cmd/server/requests"
-	"github.com/vovainside/vobook/database"
-	"github.com/vovainside/vobook/database/filters"
-	"github.com/vovainside/vobook/database/models"
-	contactproperty "github.com/vovainside/vobook/domain/contact_property"
+	"github.com/go-pg/pg/v9"
+	"github.com/go-pg/pg/v9/orm"
 )
 
 func Create(m *models.Contact) (err error) {
@@ -31,28 +31,38 @@ func Create(m *models.Contact) (err error) {
 }
 
 func Search(userID string, req requests.SearchContact) (data []models.Contact, count int, err error) {
-	q := database.ORM().Model(&data)
-	q.Apply(filters.PageFilter(req.Page, req.Limit))
-	q.Apply(filters.TrashedFilter(req.Trashed, "contact"))
+	q := database.ORM().Model(&data).
+		Column("contact.*").
+		ColumnExpr(`((CASE
+	WHEN (date_part('year', now())::TEXT || '-' || dob_month::TEXT || '-' || dob_day::TEXT)::DATE < now()::DATE
+	THEN (date_part('year', now())::INT + 1)::TEXT
+	ELSE date_part('year', now())::TEXT END)::TEXT || '-' || dob_month::TEXT || '-' || dob_day::TEXT)::DATE AS next_birthday`).
+		Apply(filters.PageFilter(req.Page, req.Limit)).
+		Apply(filters.TrashedFilter(req.Trashed, "contact"))
 
 	q.Where("user_id = ?", userID)
 
-	if len(req.Query) > 2 {
+	if req.Query != "" {
 		q.WhereGroup(func(q *orm.Query) (*orm.Query, error) {
-			q.Join("JOIN contact_properties cp ON cp.contact_id=contact.id")
-			q.WhereOr("first_name ilike ?", "%"+req.Query+"%")
-			q.WhereOr("last_name ilike ?", "%"+req.Query+"%")
-			q.WhereOr("contact.name ilike ?", "%"+req.Query+"%")
-			q.WhereOr("cp.value ilike ?", "%"+req.Query+"%")
+			q.Join("JOIN contact_properties cp ON cp.contact_id=contact.id").
+				WhereOr("first_name ilike ?", "%"+req.Query+"%").
+				WhereOr("last_name ilike ?", "%"+req.Query+"%").
+				WhereOr("contact.name ilike ?", "%"+req.Query+"%").
+				WhereOr("cp.value ilike ?", "%"+req.Query+"%")
+
 			return q, nil
-		})
+		}).
+			Group("contact.id")
+
+	} else {
+		q.Where("dob_month <> 0 AND dob_day <> 0")
+		q.OrderExpr("next_birthday")
 	}
 	q.Relation("Props", func(q *orm.Query) (*orm.Query, error) {
 		q.Order("order ASC")
 		return q, nil
 	})
 
-	q.Order("contact.created_at DESC")
 	count, err = q.SelectAndCount()
 	return
 }
@@ -112,6 +122,47 @@ func Props(id string) (elems []models.ContactProperty, err error) {
 		Where("contact_id = ?", id).
 		Order("order ASC").
 		Select()
+
+	return
+}
+
+func AddPhoto(id string, elem *models.File) (err error) {
+	cElem, err := Find(id)
+	if err != nil {
+		return
+	}
+
+	if cElem.PhotoID != "" {
+		err = file.Delete(cElem.PhotoID)
+		if err != nil {
+			return
+		}
+	}
+
+	err = file.Create(elem)
+	if err != nil {
+		return
+	}
+
+	cElem.PhotoID = elem.ID
+	err = Update(&cElem)
+
+	return
+}
+
+func DeletePhoto(elem models.Contact) (err error) {
+	photoID := elem.PhotoID
+	if photoID == "" {
+		return
+	}
+
+	elem.PhotoID = ""
+	err = Update(&elem)
+
+	err = file.Delete(photoID)
+	if err != nil {
+		return
+	}
 
 	return
 }

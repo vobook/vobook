@@ -1,9 +1,11 @@
 package errors
 
 import (
+	"fmt"
 	"net/http"
+	"strings"
 
-	"github.com/vovainside/vobook/config"
+	"vobook/config"
 )
 
 var (
@@ -27,6 +29,7 @@ var (
 	InvalidGender              = New422("Invalid gender")
 	ContactNotFound            = New404("Contact not found")
 	CreateContactNameEmpty     = New422("Contact name missing (Enter name or first name or last name)")
+	ContactPhotoNotExists      = New404("Contact do not have photo")
 )
 
 func New400(message string) error {
@@ -60,6 +63,32 @@ type Error struct {
 	Code    int
 	Message string
 	Err     error
+}
+
+type List []string
+type Input map[string]string
+
+func (l List) Error() string {
+	s := strings.Builder{}
+	for i, v := range l {
+		s.WriteString(fmt.Sprintf("%d. %s\n", i+1, v))
+	}
+	return s.String()
+}
+
+func (i Input) Add(k, v string) {
+	i[k] = v
+}
+func (i Input) Has() bool {
+	return len(i) > 0
+}
+
+func (i Input) Error() string {
+	s := strings.Builder{}
+	for k, v := range i {
+		s.WriteString(k + ": " + v + "\n")
+	}
+	return s.String()
 }
 
 func (e Error) Error() string {

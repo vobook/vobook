@@ -3,10 +3,11 @@ package middlewares
 import (
 	"strconv"
 
+	"vobook/cmd/server/errors"
+	"vobook/cmd/server/handlers"
+	"vobook/database/models"
+
 	"github.com/gin-gonic/gin"
-	"github.com/vovainside/vobook/cmd/server/errors"
-	"github.com/vovainside/vobook/cmd/server/handlers"
-	"github.com/vovainside/vobook/database/models"
 )
 
 func ClientID(c *gin.Context) {

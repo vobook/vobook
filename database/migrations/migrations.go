@@ -1,8 +1,9 @@
 package migrations
 
 import (
-	"github.com/go-pg/migrations"
-	"github.com/vovainside/vobook/database"
+	"vobook/database"
+
+	"github.com/go-pg/migrations/v7"
 )
 
 func Migrate() (int64, int64, error) {

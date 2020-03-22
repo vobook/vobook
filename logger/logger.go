@@ -4,8 +4,9 @@ import (
 	"io"
 	"os"
 
+	"vobook/config"
+
 	log "github.com/sirupsen/logrus"
-	"github.com/vovainside/vobook/config"
 	"gopkg.in/natefinch/lumberjack.v2"
 )
 

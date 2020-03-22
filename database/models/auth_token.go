@@ -4,7 +4,7 @@ import (
 	"context"
 	"time"
 
-	"github.com/vovainside/vobook/config"
+	"vobook/config"
 )
 
 type ClientID int

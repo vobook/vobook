@@ -5,12 +5,12 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/go-pg/pg"
+	"github.com/go-pg/pg/v9"
 	ta "github.com/stretchr/testify/assert"
 
-	"github.com/vovainside/vobook/database"
-	"github.com/vovainside/vobook/services/fs"
-	"github.com/vovainside/vobook/utils"
+	"vobook/database"
+	"vobook/services/fs"
+	"vobook/utils"
 )
 
 type NotNilT bool
@@ -96,6 +96,13 @@ func True(t *testing.T, value bool, msgAndArgs ...interface{}) {
 func FileExists(t *testing.T, path string, msgAndArgs ...interface{}) {
 	path = fs.FullPath(path)
 	if !ta.FileExists(t, path, msgAndArgs...) {
+		t.FailNow()
+	}
+}
+
+func FileNotExists(t *testing.T, path string, msgAndArgs ...interface{}) {
+	path = fs.FullPath(path)
+	if !ta.NoFileExists(t, path, msgAndArgs...) {
 		t.FailNow()
 	}
 }

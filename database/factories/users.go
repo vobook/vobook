@@ -1,10 +1,11 @@
 package factories
 
 import (
+	"vobook/database"
+	"vobook/database/models"
+	"vobook/utils"
+
 	fake "github.com/brianvoe/gofakeit"
-	"github.com/vovainside/vobook/database"
-	"github.com/vovainside/vobook/database/models"
-	"github.com/vovainside/vobook/utils"
 )
 
 // MakeUser makes instance of user model

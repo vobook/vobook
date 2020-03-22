@@ -5,8 +5,8 @@ import (
 
 	fake "github.com/brianvoe/gofakeit"
 
-	"github.com/vovainside/vobook/database"
-	"github.com/vovainside/vobook/database/models"
+	"vobook/database"
+	"vobook/database/models"
 )
 
 func MakeContact(mOpt ...models.Contact) (m models.Contact, err error) {
@@ -31,9 +31,17 @@ func MakeContact(mOpt ...models.Contact) (m models.Contact, err error) {
 	if m.MiddleName == "" {
 		m.MiddleName = fake.LastName()
 	}
-	if m.Birthday == nil {
-		birthday := fake.DateRange(time.Now().AddDate(-100, 0, 0), time.Now())
-		m.Birthday = &birthday
+
+	// Birthday might be:
+	// unknown, only year, only month and day, full date
+	if m.DOBYear == 0 && m.DOBMonth == 0 && m.DOBDay == 0 && fake.Bool() {
+		if fake.Bool() {
+			m.DOBYear = fake.Year()
+		}
+		if fake.Bool() {
+			m.DOBMonth = time.Month(fake.Number(1, 12))
+			m.DOBDay = fake.Day()
+		}
 	}
 
 	return

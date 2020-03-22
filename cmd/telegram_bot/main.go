@@ -7,9 +7,10 @@ import (
 	"syscall"
 	"time"
 
+	"vobook/config"
+	"vobook/database"
+
 	"github.com/davecgh/go-spew/spew"
-	"github.com/vovainside/vobook/config"
-	"github.com/vovainside/vobook/db"
 	tb "gopkg.in/tucnak/telebot.v2"
 )
 
@@ -61,7 +62,7 @@ func main() {
 }
 
 func CheckEvents(b *tb.Bot) (err error) {
-	conn := db.Conn()
+	conn := database.Conn()
 
 	events := make([]Event, 0)
 	err = conn.Model(&events).Column("*").Where("date >= NOW() - INTERVAL '30 days'").Select()

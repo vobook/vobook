@@ -47,9 +47,16 @@ type Config struct {
 		Host string
 	}
 
+	Contacts struct {
+		Preview struct {
+			W uint
+			H uint
+		}
+	}
+
 	FileStorage struct {
 		Dir string
-	}
+	} `yaml:"file_storage"`
 
 	TelegramBotAPI string `yaml:"telegram_bot_api"`
 

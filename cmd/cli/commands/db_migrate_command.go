@@ -3,8 +3,8 @@ package commands
 import (
 	"fmt"
 
-	"github.com/vovainside/vobook/database"
-	"github.com/vovainside/vobook/database/migrations"
+	"vobook/database"
+	"vobook/database/migrations"
 )
 
 func init() {
@@ -26,11 +26,10 @@ func migrateDB(args ...string) (err error) {
 	}
 	if n == 0 {
 		_, err = db.Exec(`
-		CREATE SEQUENCE gopg_migrations_id_seq;
 		CREATE TABLE gopg_migrations
 		(
-			id         INT DEFAULT nextval('gopg_migrations_id_seq'),
-			version    INT,
+			id         SERIAL NOT NULL,
+			version    INT NOT NULL,
 			created_at TIMESTAMPTZ
 		);`)
 		if err != nil {
@@ -39,6 +38,7 @@ func migrateDB(args ...string) (err error) {
 	}
 
 	oldV, newV, err := migrations.Migrate()
+
 	if err != nil {
 		return
 	}

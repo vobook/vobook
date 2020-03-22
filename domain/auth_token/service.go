@@ -6,12 +6,12 @@ import (
 	"strings"
 	"time"
 
-	"github.com/go-pg/pg"
+	"vobook/cmd/server/errors"
+	"vobook/database"
+	"vobook/database/models"
+	"vobook/utils"
 
-	"github.com/vovainside/vobook/cmd/server/errors"
-	"github.com/vovainside/vobook/database"
-	"github.com/vovainside/vobook/database/models"
-	"github.com/vovainside/vobook/utils"
+	"github.com/go-pg/pg/v9"
 )
 
 func Create(elem *models.AuthToken) (err error) {
@@ -43,7 +43,6 @@ func Sign(elem *models.AuthToken) string {
 		elem.UserID,
 		fmt.Sprintf("%d", elem.ClientID),
 		elem.UserAgent,
-		elem.ClientIP,
 		elem.Token,
 		elem.CreatedAt.UTC().Format(time.RFC3339),
 		elem.ExpiresAt.UTC().Format(time.RFC3339),

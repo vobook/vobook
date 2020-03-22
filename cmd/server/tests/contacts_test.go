@@ -4,19 +4,20 @@ import (
 	"fmt"
 	"testing"
 	"time"
+	"vobook/domain/file"
+	"vobook/services/fs"
+
+	"vobook/cmd/server/requests"
+	"vobook/cmd/server/responses"
+	"vobook/database/factories"
+	"vobook/database/models"
+	contactpropertytype "vobook/enum/contact_property_type"
+	. "vobook/tests/apitest"
+	"vobook/tests/assert"
+	. "vobook/tests/fake"
+	"vobook/utils"
 
 	fake "github.com/brianvoe/gofakeit"
-	"github.com/davecgh/go-spew/spew"
-	"github.com/vovainside/vobook/cmd/server/requests"
-	"github.com/vovainside/vobook/cmd/server/responses"
-	"github.com/vovainside/vobook/config"
-	"github.com/vovainside/vobook/database"
-	"github.com/vovainside/vobook/database/factories"
-	"github.com/vovainside/vobook/database/models"
-	contactpropertytype "github.com/vovainside/vobook/enum/contact_property_type"
-	. "github.com/vovainside/vobook/tests/apitest"
-	"github.com/vovainside/vobook/tests/assert"
-	"github.com/vovainside/vobook/utils"
 )
 
 func TestCreateContact(t *testing.T) {
@@ -24,7 +25,9 @@ func TestCreateContact(t *testing.T) {
 		Name:      fake.Name(),
 		FirstName: fake.FirstName(),
 		LastName:  fake.LastName(),
-		Birthday:  fake.DateRange(time.Now().AddDate(-100, 0, 0), time.Now()).Format(database.DateFormat),
+		DOBYear:   fake.Year(),
+		DOBMonth:  time.Month(fake.Number(1, 12)),
+		DOBDay:    fake.Day(),
 		Properties: []requests.CreateContactProperty{
 			{
 				Type:  contactpropertytype.Email,
@@ -58,7 +61,9 @@ func TestCreateContact(t *testing.T) {
 	assert.Equals(t, AuthUser.ID, resp.UserID)
 	assert.Equals(t, req.FirstName, resp.FirstName)
 	assert.Equals(t, req.LastName, resp.LastName)
-	assert.Equals(t, req.Birthday, resp.Birthday.Format(Conf.DateFormat))
+	assert.Equals(t, req.DOBYear, resp.DOBYear)
+	assert.Equals(t, req.DOBMonth, resp.DOBMonth)
+	assert.Equals(t, req.DOBDay, resp.DOBDay)
 	assert.Equals(t, len(req.Properties), len(resp.Props))
 
 	for i, v := range req.Properties {
@@ -73,6 +78,9 @@ func TestCreateContact(t *testing.T) {
 		"user_id":    AuthUser.ID,
 		"first_name": req.FirstName,
 		"last_name":  req.LastName,
+		"dob_year":   req.DOBYear,
+		"dob_month":  req.DOBMonth,
+		"dob_day":    req.DOBDay,
 	})
 
 	for _, v := range req.Properties {
@@ -94,13 +102,27 @@ func TestUpdateContact(t *testing.T) {
 	firstName := fake.FirstName()
 	lastName := fake.LastName()
 	middleName := fake.LastName()
-	bday := fake.DateRange(time.Now().AddDate(-100, 0, 0), time.Now()).Format(config.Get().DateFormat)
+	dobYear := fake.Year()
+	dobMonth := time.Month(fake.Number(1, 12))
+	dobDay := fake.Day()
 	req := requests.UpdateContact{
 		Name:       &name,
 		FirstName:  &firstName,
 		LastName:   &lastName,
 		MiddleName: &middleName,
-		Birthday:   &bday,
+		DOBYear:    &dobYear,
+		DOBMonth:   &dobMonth,
+		DOBDay:     &dobDay,
+		Properties: []requests.CreateContactProperty{
+			{
+				Type:  contactpropertytype.Email,
+				Value: fake.Email(),
+			},
+			{
+				Type:  contactpropertytype.Phone,
+				Value: fake.PhoneFormatted(),
+			},
+		},
 	}
 
 	var resp responses.Success
@@ -112,6 +134,20 @@ func TestUpdateContact(t *testing.T) {
 		"first_name":  firstName,
 		"last_name":   lastName,
 		"middle_name": middleName,
+		"dob_year":    dobYear,
+		"dob_month":   dobMonth,
+		"dob_day":     dobDay,
+	})
+
+	assert.DatabaseHas(t, "contact_properties", utils.M{
+		"contact_id": elem.ID,
+		"type":       contactpropertytype.Email,
+		"value":      req.Properties[0].Value,
+	})
+	assert.DatabaseHas(t, "contact_properties", utils.M{
+		"contact_id": elem.ID,
+		"type":       contactpropertytype.Phone,
+		"value":      req.Properties[1].Value,
 	})
 }
 
@@ -210,14 +246,12 @@ func TestGetContact(t *testing.T) {
 	}
 
 	var resp models.Contact
-	Fetch(t, "contacts/"+elem.ID, &resp)
+	TestGet(t, "contacts/"+elem.ID, &resp)
 
 	assert.Equals(t, elem.ID, resp.ID)
 	assert.Equals(t, elem.FirstName, resp.FirstName)
 	assert.Equals(t, elem.LastName, resp.LastName)
 	assert.Equals(t, 3, len(resp.Props))
-
-	spew.Dump(resp)
 
 	for i, v := range props {
 		assert.Equals(t, v.ID, resp.Props[i].ID)
@@ -230,7 +264,11 @@ func TestGetContact(t *testing.T) {
 
 func TestSearchContact(t *testing.T) {
 	ReLogin(t)
-	elem, err := factories.CreateContact(models.Contact{UserID: AuthUser.ID})
+	elem, err := factories.CreateContact(models.Contact{
+		UserID:   AuthUser.ID,
+		DOBMonth: 1,
+		DOBDay:   1,
+	})
 	assert.NotError(t, err)
 
 	props := make([]models.ContactProperty, 3)
@@ -244,11 +282,20 @@ func TestSearchContact(t *testing.T) {
 		props[i] = prop
 	}
 
-	_, err = factories.CreateContact(models.Contact{UserID: AuthUser.ID})
+	_, err = factories.CreateContact(models.Contact{
+		UserID:   AuthUser.ID,
+		DOBMonth: 1,
+		DOBDay:   1,
+	})
 	assert.NotError(t, err)
 
 	deletedAt := time.Now()
-	elem3, err := factories.CreateContact(models.Contact{UserID: AuthUser.ID, DeletedAt: &deletedAt})
+	elem3, err := factories.CreateContact(models.Contact{
+		UserID:    AuthUser.ID,
+		DeletedAt: &deletedAt,
+		DOBMonth:  1,
+		DOBDay:    1,
+	})
 	assert.NotError(t, err)
 
 	// should get 2 contacts
@@ -268,4 +315,132 @@ func TestSearchContact(t *testing.T) {
 	TestSearch(t, "contacts", req, &resp)
 	assert.Equals(t, 1, len(resp.Data))
 	assert.Equals(t, elem.ID, resp.Data[0].ID)
+}
+
+func TestAddContactPhoto(t *testing.T) {
+	Login(t)
+
+	picData, err := PictureBase64()
+	assert.NotError(t, err)
+
+	req := requests.FileBase64{
+		Name:        "My pic",
+		Description: "It is not my pic, sorry",
+		Filename:    utils.RandomString() + ".png",
+		Data:        picData,
+	}
+
+	elem, err := factories.CreateContact(models.Contact{
+		UserID: AuthUser.ID,
+	})
+	assert.NotError(t, err)
+
+	var resp models.File
+	TestUpdate(t, "contacts/"+elem.ID+"/photo", req, &resp)
+
+	assert.DatabaseHas(t, "files", utils.M{
+		"id":          resp.ID,
+		"user_id":     AuthUser.ID,
+		"name":        req.Name,
+		"description": req.Description,
+		"type":        fs.FileTypeImage,
+	})
+	assert.DatabaseHas(t, "contacts", utils.M{
+		"id":       elem.ID,
+		"photo_id": resp.ID,
+	})
+
+	fileEl, err := file.GetByID(resp.ID)
+	assert.NotError(t, err)
+
+	assert.FileExists(t, fileEl.Path)
+
+	// cleanup
+	err = fs.Delete(fileEl.Path)
+	assert.NotError(t, err)
+
+	assert.FileNotExists(t, fileEl.Path)
+}
+
+func TestDeleteContactPhoto(t *testing.T) {
+	Login(t)
+
+	fileEl, err := factories.CreateFile(models.File{
+		UserID: AuthUser.ID,
+	})
+	assert.NotError(t, err)
+
+	elem, err := factories.CreateContact(models.Contact{
+		UserID:  AuthUser.ID,
+		PhotoID: fileEl.ID,
+	})
+	assert.NotError(t, err)
+
+	var resp responses.Success
+	TestDelete(t, "contacts/"+elem.ID+"/photo", &resp)
+
+	assert.DatabaseMissing(t, "files", utils.M{
+		"id": fileEl.ID,
+	})
+	assert.DatabaseHas(t, "contacts", utils.M{
+		"id":       elem.ID,
+		"photo_id": nil,
+	})
+
+	assert.FileNotExists(t, fileEl.Path)
+}
+
+func TestGetContactPhoto(t *testing.T) {
+	Login(t)
+
+	fileEl, err := factories.CreateFile(models.File{
+		UserID: AuthUser.ID,
+	})
+	assert.NotError(t, err)
+
+	elem, err := factories.CreateContact(models.Contact{
+		UserID:  AuthUser.ID,
+		PhotoID: fileEl.ID,
+	})
+	assert.NotError(t, err)
+
+	resp := TestGet(t, "contacts/"+elem.ID+"/photo", nil)
+
+	assert.Equals(t, fileEl.Bytes, resp.Body.Bytes())
+
+	// cleanup
+	err = fs.Delete(fileEl.Path)
+	assert.NotError(t, err)
+	assert.FileNotExists(t, fileEl.Path)
+}
+
+func TestGetContactPhotoPreview(t *testing.T) {
+	Login(t)
+
+	fileEl, err := factories.CreateFile(models.File{
+		UserID: AuthUser.ID,
+	})
+	assert.NotError(t, err)
+
+	elem, err := factories.CreateContact(models.Contact{
+		UserID:  AuthUser.ID,
+		PhotoID: fileEl.ID,
+	})
+	assert.NotError(t, err)
+
+	TestGet(t, "contacts/"+elem.ID+"/photo/preview", nil)
+
+	fileEl, err = file.GetByID(fileEl.ID)
+	assert.NotError(t, err)
+
+	assert.FileExists(t, fileEl.PreviewPath)
+
+	// cleanup
+	err = fs.Delete(fileEl.Path)
+	assert.NotError(t, err)
+	assert.FileNotExists(t, fileEl.Path)
+
+	err = fs.Delete(fileEl.PreviewPath)
+	assert.NotError(t, err)
+	assert.FileNotExists(t, fileEl.PreviewPath)
 }

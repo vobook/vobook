@@ -1,10 +1,11 @@
 package requests
 
 import (
+	"vobook/database/models"
+	"vobook/utils"
+
 	validation "github.com/go-ozzo/ozzo-validation"
 	"github.com/go-ozzo/ozzo-validation/is"
-	"github.com/vovainside/vobook/database/models"
-	"github.com/vovainside/vobook/utils"
 )
 
 type RegisterUser struct {

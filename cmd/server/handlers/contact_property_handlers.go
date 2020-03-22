@@ -3,14 +3,13 @@ package handlers
 import (
 	"net/http"
 
-	contactpropertytype "github.com/vovainside/vobook/enum/contact_property_type"
+	"vobook/cmd/server/requests"
+	"vobook/cmd/server/responses"
+	"vobook/database/models"
+	contactproperty "vobook/domain/contact_property"
+	contactpropertytype "vobook/enum/contact_property_type"
 
 	"github.com/gin-gonic/gin"
-
-	"github.com/vovainside/vobook/cmd/server/requests"
-	"github.com/vovainside/vobook/cmd/server/responses"
-	"github.com/vovainside/vobook/database/models"
-	contactproperty "github.com/vovainside/vobook/domain/contact_property"
 )
 
 func UpdateContactProperty(c *gin.Context) {

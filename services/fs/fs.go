@@ -11,7 +11,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/vovainside/vobook/config"
+	"vobook/config"
 )
 
 type FileType uint8
@@ -66,8 +66,8 @@ func Type(filename string) FileType {
 	return FileTypeOther
 }
 
-// Store writes given file bytes in storage
-func Store(name string, b []byte) (filename string, err error) {
+// Save writes given file bytes in storage
+func Save(name string, b []byte) (filename string, err error) {
 	t := time.Now().UTC()
 	dateFolder := fmt.Sprintf("%d-%02d", t.Year(), t.Month())
 	filename, err = UniqueFilename(path.Join(dateFolder, name))
@@ -77,13 +77,19 @@ func Store(name string, b []byte) (filename string, err error) {
 
 	err = os.MkdirAll(path.Join(config.Get().FileStorage.Dir, dateFolder), 0755)
 	if err != nil {
-		err = fmt.Errorf("fs.Store: MkdirAll: %s", err.Error())
+		err = fmt.Errorf("fs.Save: MkdirAll: %s", err.Error())
 		return
 	}
 	err = ioutil.WriteFile(FullPath(filename), b, 0755)
 	if err != nil {
-		err = fmt.Errorf("fs.Store: WriteFile: %s", err.Error())
+		err = fmt.Errorf("fs.Save: WriteFile: %s", err.Error())
 	}
+	return
+}
+
+// Load loads file from FS
+func Load(fName string) (data []byte, err error) {
+	data, err = ioutil.ReadFile(FullPath(fName))
 	return
 }
 
@@ -125,11 +131,11 @@ func Base64(filename string) (b64 string, err error) {
 	}
 
 	reader := bufio.NewReader(f)
-	content, err := ioutil.ReadAll(reader)
+	data, err := ioutil.ReadAll(reader)
 	if err != nil {
 		return
 	}
 
-	b64 = base64.StdEncoding.EncodeToString(content)
+	b64 = base64.StdEncoding.EncodeToString(data)
 	return
 }

@@ -3,8 +3,8 @@ package routes
 import (
 	"github.com/gin-gonic/gin"
 
-	"github.com/vovainside/vobook/cmd/server/handlers"
-	"github.com/vovainside/vobook/cmd/server/middlewares"
+	"vobook/cmd/server/handlers"
+	"vobook/cmd/server/middlewares"
 )
 
 func contactRoutes(r *gin.RouterGroup) {
@@ -18,11 +18,17 @@ func contactRoutes(r *gin.RouterGroup) {
 		{
 			one.PUT("/", handlers.UpdateContact)
 			one.GET("/", handlers.GetContact)
+			photo := one.Group("photo")
+			{
+				photo.GET("/", handlers.GetContactPhoto)
+				photo.GET("/preview/", handlers.GetContactPhotoPreview)
+				photo.PUT("/", handlers.AddContactPhoto)
+				photo.DELETE("/", handlers.DeleteContactPhoto)
+			}
 		}
-
 	}
 
-	// because gin can't have routes that will match by willcard
+	// because gin can't have routes that will match by wildcard
 	// (panic: wildcard route ':id' conflicts with existing children in path)
 	// i'll gonna use verbs to get around this limitation
 	r.PUT("/trash-contacts/", handlers.TrashContacts)

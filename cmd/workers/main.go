@@ -4,12 +4,12 @@ import (
 	"os"
 	"os/signal"
 
-	log "github.com/sirupsen/logrus"
+	"vobook/config"
+	"vobook/logger"
+	"vobook/services/mail"
+	"vobook/workers"
 
-	"github.com/vovainside/vobook/config"
-	"github.com/vovainside/vobook/logger"
-	"github.com/vovainside/vobook/services/mail"
-	"github.com/vovainside/vobook/workers"
+	log "github.com/sirupsen/logrus"
 )
 
 func main() {

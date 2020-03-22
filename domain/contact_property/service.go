@@ -1,10 +1,10 @@
 package contactproperty
 
 import (
-	"github.com/go-pg/pg"
+	"github.com/go-pg/pg/v9"
 
-	"github.com/vovainside/vobook/database"
-	"github.com/vovainside/vobook/database/models"
+	"vobook/database"
+	"vobook/database/models"
 )
 
 func CreateMany(elems *[]models.ContactProperty) (err error) {
@@ -58,6 +58,13 @@ func Delete(userID string, ids ...string) (err error) {
 		"DELETE FROM contact_properties WHERE id IN (?) AND contact_id IN "+
 			"(SELECT id FROM contacts WHERE user_id=?)",
 		pg.In(ids), userID)
+
+	return
+}
+
+func DeleteByContact(contactID string) (err error) {
+	_, err = database.ORM().Exec(
+		"DELETE FROM contact_properties WHERE contact_id=?", contactID)
 
 	return
 }
