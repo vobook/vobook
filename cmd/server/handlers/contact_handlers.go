@@ -2,8 +2,10 @@ package handlers
 
 import (
 	"net/http"
-
+	"vobook/cmd/server/errors"
 	contactproperty "vobook/domain/contact_property"
+	"vobook/domain/file"
+	"vobook/services/fs"
 
 	"github.com/gin-gonic/gin"
 
@@ -146,6 +148,84 @@ func GetContact(c *gin.Context) {
 
 	elem.Props = props
 	c.JSON(http.StatusOK, elem)
+}
+
+func AddContactPhoto(c *gin.Context) {
+	contactEl := getContactFromRequest(c)
+
+	var req requests.FileBase64
+	if !bindJSON(c, &req) {
+		return
+	}
+
+	photoEl, err := req.ToModel()
+	if err != nil {
+		Abort(c, err)
+		return
+	}
+	photoEl.UserID = AuthUser(c).ID
+
+	err = contact.AddPhoto(contactEl.ID, photoEl)
+	if err != nil {
+		Abort(c, err)
+		return
+	}
+
+	c.JSON(http.StatusOK, photoEl)
+}
+
+func GetContactPhoto(c *gin.Context) {
+	elem := getContactFromRequest(c)
+
+	if elem.PhotoID == "" {
+		Abort(c, errors.ContactPhotoNotExists)
+		return
+	}
+
+	fileEl, err := file.GetByID(elem.PhotoID)
+	if err != nil {
+		Abort(c, err)
+		return
+	}
+
+	c.File(fs.FullPath(fileEl.Path))
+}
+
+func GetContactPhotoPreview(c *gin.Context) {
+	elem := getContactFromRequest(c)
+
+	if elem.PhotoID == "" {
+		Abort(c, errors.ContactPhotoNotExists)
+		return
+	}
+
+	fileEl, err := file.GetByID(elem.PhotoID)
+	if err != nil {
+		Abort(c, err)
+		return
+	}
+
+	if fileEl.PreviewPath == "" {
+		err = file.CreatePreview(&fileEl)
+		if err != nil {
+			Abort(c, err)
+			return
+		}
+	}
+
+	c.File(fs.FullPath(fileEl.PreviewPath))
+}
+
+func DeleteContactPhoto(c *gin.Context) {
+	elem := getContactFromRequest(c)
+
+	err := contact.DeletePhoto(elem)
+	if err != nil {
+		Abort(c, err)
+		return
+	}
+
+	c.JSON(http.StatusOK, responses.OK("Success"))
 }
 
 func getContactFromRequest(c *gin.Context) models.Contact {

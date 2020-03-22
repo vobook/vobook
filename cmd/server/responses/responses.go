@@ -1,7 +1,9 @@
 package responses
 
 type Error struct {
-	Error string `json:"error"`
+	Error       string            `json:"error,omitempty"`
+	Errors      []string          `json:"errors,omitempty"`
+	InputErrors map[string]string `json:"input_errors,omitempty"`
 }
 
 type Success struct {

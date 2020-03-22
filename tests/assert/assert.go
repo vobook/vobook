@@ -99,3 +99,10 @@ func FileExists(t *testing.T, path string, msgAndArgs ...interface{}) {
 		t.FailNow()
 	}
 }
+
+func FileNotExists(t *testing.T, path string, msgAndArgs ...interface{}) {
+	path = fs.FullPath(path)
+	if !ta.NoFileExists(t, path, msgAndArgs...) {
+		t.FailNow()
+	}
+}

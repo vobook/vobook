@@ -10,6 +10,7 @@ import (
 type Contact struct {
 	ID         string     `json:"id"`
 	UserID     string     `json:"user_id"`
+	PhotoID    string     `json:"photo_id"`
 	Name       string     `json:"name"`
 	FirstName  string     `json:"first_name"`
 	LastName   string     `json:"last_name"`

@@ -2,6 +2,7 @@ package contact
 
 import (
 	"time"
+	"vobook/domain/file"
 
 	"vobook/cmd/server/requests"
 	"vobook/database"
@@ -121,6 +122,47 @@ func Props(id string) (elems []models.ContactProperty, err error) {
 		Where("contact_id = ?", id).
 		Order("order ASC").
 		Select()
+
+	return
+}
+
+func AddPhoto(id string, elem *models.File) (err error) {
+	cElem, err := Find(id)
+	if err != nil {
+		return
+	}
+
+	if cElem.PhotoID != "" {
+		err = file.Delete(cElem.PhotoID)
+		if err != nil {
+			return
+		}
+	}
+
+	err = file.Create(elem)
+	if err != nil {
+		return
+	}
+
+	cElem.PhotoID = elem.ID
+	err = Update(&cElem)
+
+	return
+}
+
+func DeletePhoto(elem models.Contact) (err error) {
+	photoID := elem.PhotoID
+	if photoID == "" {
+		return
+	}
+
+	elem.PhotoID = ""
+	err = Update(&elem)
+
+	err = file.Delete(photoID)
+	if err != nil {
+		return
+	}
 
 	return
 }

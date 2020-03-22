@@ -195,7 +195,6 @@ func TestGetContactPropertyTypes(t *testing.T) {
 	Login(t)
 
 	var resp []contactpropertytype.TypeModel
-	Fetch(t, "contact-property-types", &resp)
-
+	TestGet(t, "contact-property-types", &resp)
 	assert.Equals(t, len(contactpropertytype.All), len(resp))
 }

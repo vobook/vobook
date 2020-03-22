@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"testing"
 	"time"
+	"vobook/domain/file"
+	"vobook/services/fs"
 
 	"vobook/cmd/server/requests"
 	"vobook/cmd/server/responses"
@@ -12,10 +14,10 @@ import (
 	contactpropertytype "vobook/enum/contact_property_type"
 	. "vobook/tests/apitest"
 	"vobook/tests/assert"
+	. "vobook/tests/fake"
 	"vobook/utils"
 
 	fake "github.com/brianvoe/gofakeit"
-	"github.com/davecgh/go-spew/spew"
 )
 
 func TestCreateContact(t *testing.T) {
@@ -244,14 +246,12 @@ func TestGetContact(t *testing.T) {
 	}
 
 	var resp models.Contact
-	Fetch(t, "contacts/"+elem.ID, &resp)
+	TestGet(t, "contacts/"+elem.ID, &resp)
 
 	assert.Equals(t, elem.ID, resp.ID)
 	assert.Equals(t, elem.FirstName, resp.FirstName)
 	assert.Equals(t, elem.LastName, resp.LastName)
 	assert.Equals(t, 3, len(resp.Props))
-
-	spew.Dump(resp)
 
 	for i, v := range props {
 		assert.Equals(t, v.ID, resp.Props[i].ID)
@@ -315,4 +315,132 @@ func TestSearchContact(t *testing.T) {
 	TestSearch(t, "contacts", req, &resp)
 	assert.Equals(t, 1, len(resp.Data))
 	assert.Equals(t, elem.ID, resp.Data[0].ID)
+}
+
+func TestAddContactPhoto(t *testing.T) {
+	Login(t)
+
+	picData, err := PictureBase64()
+	assert.NotError(t, err)
+
+	req := requests.FileBase64{
+		Name:        "My pic",
+		Description: "It is not my pic, sorry",
+		Filename:    utils.RandomString() + ".png",
+		Data:        picData,
+	}
+
+	elem, err := factories.CreateContact(models.Contact{
+		UserID: AuthUser.ID,
+	})
+	assert.NotError(t, err)
+
+	var resp models.File
+	TestUpdate(t, "contacts/"+elem.ID+"/photo", req, &resp)
+
+	assert.DatabaseHas(t, "files", utils.M{
+		"id":          resp.ID,
+		"user_id":     AuthUser.ID,
+		"name":        req.Name,
+		"description": req.Description,
+		"type":        fs.FileTypeImage,
+	})
+	assert.DatabaseHas(t, "contacts", utils.M{
+		"id":       elem.ID,
+		"photo_id": resp.ID,
+	})
+
+	fileEl, err := file.GetByID(resp.ID)
+	assert.NotError(t, err)
+
+	assert.FileExists(t, fileEl.Path)
+
+	// cleanup
+	err = fs.Delete(fileEl.Path)
+	assert.NotError(t, err)
+
+	assert.FileNotExists(t, fileEl.Path)
+}
+
+func TestDeleteContactPhoto(t *testing.T) {
+	Login(t)
+
+	fileEl, err := factories.CreateFile(models.File{
+		UserID: AuthUser.ID,
+	})
+	assert.NotError(t, err)
+
+	elem, err := factories.CreateContact(models.Contact{
+		UserID:  AuthUser.ID,
+		PhotoID: fileEl.ID,
+	})
+	assert.NotError(t, err)
+
+	var resp responses.Success
+	TestDelete(t, "contacts/"+elem.ID+"/photo", &resp)
+
+	assert.DatabaseMissing(t, "files", utils.M{
+		"id": fileEl.ID,
+	})
+	assert.DatabaseHas(t, "contacts", utils.M{
+		"id":       elem.ID,
+		"photo_id": nil,
+	})
+
+	assert.FileNotExists(t, fileEl.Path)
+}
+
+func TestGetContactPhoto(t *testing.T) {
+	Login(t)
+
+	fileEl, err := factories.CreateFile(models.File{
+		UserID: AuthUser.ID,
+	})
+	assert.NotError(t, err)
+
+	elem, err := factories.CreateContact(models.Contact{
+		UserID:  AuthUser.ID,
+		PhotoID: fileEl.ID,
+	})
+	assert.NotError(t, err)
+
+	resp := TestGet(t, "contacts/"+elem.ID+"/photo", nil)
+
+	assert.Equals(t, fileEl.Bytes, resp.Body.Bytes())
+
+	// cleanup
+	err = fs.Delete(fileEl.Path)
+	assert.NotError(t, err)
+	assert.FileNotExists(t, fileEl.Path)
+}
+
+func TestGetContactPhotoPreview(t *testing.T) {
+	Login(t)
+
+	fileEl, err := factories.CreateFile(models.File{
+		UserID: AuthUser.ID,
+	})
+	assert.NotError(t, err)
+
+	elem, err := factories.CreateContact(models.Contact{
+		UserID:  AuthUser.ID,
+		PhotoID: fileEl.ID,
+	})
+	assert.NotError(t, err)
+
+	TestGet(t, "contacts/"+elem.ID+"/photo/preview", nil)
+
+	fileEl, err = file.GetByID(fileEl.ID)
+	assert.NotError(t, err)
+
+	assert.FileExists(t, fileEl.PreviewPath)
+
+	// cleanup
+	err = fs.Delete(fileEl.Path)
+	assert.NotError(t, err)
+	assert.FileNotExists(t, fileEl.Path)
+
+	err = fs.Delete(fileEl.PreviewPath)
+	assert.NotError(t, err)
+	assert.FileNotExists(t, fileEl.PreviewPath)
 }
